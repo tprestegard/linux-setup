@@ -1,0 +1,6 @@
+# Temp vim files
+*.swp
+
+# SSH config file (if it somehow makes it in unencrypted)
+config
+

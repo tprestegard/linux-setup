@@ -1,0 +1,38 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+my $wordfile = "/home/tanner/bin/words.txt";
+
+open(WDS,"<$wordfile") or die $!;
+my @words = <WDS>;
+close(WDS);
+
+my $range = scalar(@words);
+
+my $rand1 = int(rand($range));
+my $rand2 = int(rand($range));
+
+my $word1 = $words[$rand1];
+my $word2 = $words[$rand2];
+
+
+# we don't want word1 to end in a vowel and word2 to begin with a vowel
+my $bool1 = ( $word1 =~ m/.*(a|e|i|o|u)$/ && $word2 =~ m/^(a|e|i|o|u).*/ );
+
+# we don't want word1 to end with the same letter that word2 starts with
+my $bool2 = ( $word1 =~ m/.*(\w{1})$/ && $word2 =~ m/^$1.*/ );
+
+
+while ( $word1 eq $word2 || $bool1 || $bool2) {
+    my $rand3 = int(rand($range));
+    my $word3 = $words[$rand3];
+    $word2 = $word3;
+    $bool1 = ( $word1 =~ m/.*(a|e|i|o|u)$/ && $word2 =~ m/^(a|e|i|o|u).*/ );
+    $bool2 = ( $word1 =~ m/.*(\w{1})$/ && $word2 =~ m/^$1.*/ );
+}
+
+chomp($word1); chomp($word2);
+
+print $word1.$word2."\n";

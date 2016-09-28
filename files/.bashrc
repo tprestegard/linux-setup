@@ -110,7 +110,9 @@ source ${HOME}/bin/prompt
 PROMPT_COMMAND='PS1=`_theme_distinguished` add_venv_info'
 
 # Set up virtualenvwrapper                                                  
-source /usr/local/bin/virtualenvwrapper.sh
+if [[ -f /usr/local/bin/virtualenvwrapper.sh ]]; then
+	source /usr/local/bin/virtualenvwrapper.sh
+fi
 
 # Other setup
 # Up arrow to complete history.

@@ -1,0 +1,65 @@
+#! /usr/bin/env bash
+
+# Install script
+
+# Parameters.
+FILE_DIR="files"
+ENC_SUFFIX=".encrypted"
+
+# Files installed in a directory other than ${HOME}.
+# Keys are the file names, values are the directories.
+declare -A otherfiles
+otherfiles["config"]="${HOME}/.ssh"
+
+# Main code ##########################################################
+
+# Handle encrypted files -------------------------
+# Get list of encrypted files.
+enc_files=$(ls -a ${FILE_DIR}/*${ENC_SUFFIX})
+
+# Decrypt any encrypted files.
+for file in ${enc_files}; do
+	# Build output name for decrypted file.
+	out_file=${FILE_DIR}/$(basename --suffix=${ENC_SUFFIX} ${file})
+
+	# Decrypt file (if it hasn't already been decrypted).
+	echo -n "Decrypting ${file} to ${out_file}."
+	overwrite="y"
+	if [[ -r ${out_file} ]] && [[ -f ${out_file} ]]; then
+		echo -n "..decrypted file already exists. Overwrite (y/n)? "
+		read overwrite
+	fi
+
+	if [[ "${overwrite}" =~ ^y|Y ]]; then
+		echo -e "\nYou may need to enter your GPG key passphrase."
+		gpg2 --yes --out ${out_file} --decrypt ${file}
+	fi
+done
+
+# Link files -------------------------------------
+# Get file list (excluding encrypted files).
+file_list=$(ls -A ${FILE_DIR}/ --ignore="*${ENC_SUFFIX}")
+
+# Loop over files.
+for file in ${file_list}; do
+	# Get destination for symbolic link.
+	if [[ -z ${otherfiles[${file}]} ]]; then
+		dest=${HOME}/${file}
+	else
+		dest=${otherfiles[${file}]}/${file}
+	fi
+
+	# Check if file or symlink already exists.
+
+	# If so, check if user wants to overwrite each one
+	# (unless overwrite argument passed to script)?
+	echo "ln -s ${FILE_DIR}/${file} ${dest}"
+
+
+done
+
+# Link each one to its proper location; check for existence of
+# original files. If they are present, move them to a temp directory
+# for storage. The uninstall script will remove the symlinks and
+# restore the original files.
+

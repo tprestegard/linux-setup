@@ -126,6 +126,9 @@ alias lh='ls -lh'
 alias emacs='emacs -nw'
 alias theme='source theme' # allows theme to be changed on-the-fly
 
+# UWM VPN
+oc () { sudo openconnect -u prestega --juniper vpn.uwm.edu -b --no-cert-check; }
+
 # SSH functions ---------------
 # UMN physics computers.
 luts () { ssh -Y lutsen.spa.umn.edu ; }

@@ -4,17 +4,14 @@
 Clone the repository using SSH: git clone git@github.com:tprestegard/linux-setup.git
 
 ## Distributing the files in the repository
-First, decrypt any encrypted files (see below).
- * config (ssh config files)
+Run the install script.
+ * Description of install script.
+ * Handling of currently existing files.
 
-## Propagating changes in your files to your local repository.
+Reverting the install.
 
 ## Making commits and pushing to the remote repo
 Sign with GPG key:
-
-## Encrypting and decrypting files
-gpg2 --out config.encrypted --recipient "Tanner Prestegard" --encrypt config
-gpg2 --out config.dec --decrypt config.encrypted
 
 ## Other stuff to set up
 

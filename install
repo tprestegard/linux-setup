@@ -5,11 +5,12 @@
 # Parameters.
 FILE_DIR="files"
 ENC_SUFFIX=".encrypted"
+STORE_DIR=".linux-setup-store"
 
 # Files installed in a directory other than ${HOME}.
 # Keys are the file names, values are the directories.
-declare -A otherfiles
-otherfiles["config"]="${HOME}/.ssh"
+declare -A nonhomefiles
+nonhomefiles["config"]="${HOME}/.ssh"
 
 # Main code ##########################################################
 
@@ -42,24 +43,44 @@ file_list=$(ls -A ${FILE_DIR}/ --ignore="*${ENC_SUFFIX}")
 
 # Loop over files.
 for file in ${file_list}; do
+	# Get absolute path to file.
+	afile=$(realpath ${FILE_DIR}/${file})
+
 	# Get destination for symbolic link.
-	if [[ -z ${otherfiles[${file}]} ]]; then
+	if [[ -z ${nonhomefiles[${file}]} ]]; then
 		dest=${HOME}/${file}
 	else
-		dest=${otherfiles[${file}]}/${file}
+		dest=${nonhomefiles[${file}]}/${file}
 	fi
 
+	# Link each one to its proper location; check for existence of
+	# original files. If they are present, move them to a temp directory
+	# for storage. The uninstall script will remove the symlinks and
+	# restore the original files.
+	echo "Setting up ${dest}."
+
 	# Check if file or symlink already exists.
-
-	# If so, check if user wants to overwrite each one
-	# (unless overwrite argument passed to script)?
-	echo "ln -s ${FILE_DIR}/${file} ${dest}"
-
+	if [[ -f ${dest} ]] || [[ -d ${dest} ]]; then
+		# If file already exists, move to ~/${STORE_DIR}.
+		if [[ -e ${STORE_DIR} ]] && [[ ! -d ${STORE_DIR} ]]; then
+			echo -e "\tError: ${STORE_DIR} exists and is not a directory."
+			exit 3
+		elif [[ ! -e ${STORE_DIR} ]]; then
+			echo -e "\tCreating directory ${STORE_DIR}."
+			mkdir -p ${STORE_DIR}
+		fi
+		echo -e "\tMoving file ${dest} to ${STORE_DIR}."
+		mv ${dest} ${STORE_DIR}
+	elif [[ -L ${dest} ]]; then
+		# If symlink exists, just delete it.
+		echo -e "\tDeleting old symbolic link ${dest}."
+		rm ${dest}
+	fi
+	
+	# Symlink file.
+	echo -e "\tLinking ${afile} to ${dest}."
+	ln -s ${afile} ${dest}
 
 done
 
-# Link each one to its proper location; check for existence of
-# original files. If they are present, move them to a temp directory
-# for storage. The uninstall script will remove the symlinks and
-# restore the original files.
 

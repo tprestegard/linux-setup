@@ -1,43 +1,56 @@
 #! /usr/bin/env bash
 
-theme[0]="blue_steel"
+theme[0]="blue_steel (warning: add_venv does not work with this theme)"
 theme[1]="theme_x"
 theme[2]="distinguished"
 theme[3]="random_color"
 theme[4]="random_color_xtreme"
 
-list="${theme[*]}"
-
-if [ $# == 0 ] || [ "$1" == "-help" ]; then
+# Handle arguments.
+if [[ $# == 0 ]] || [[ "$1" == "-help" ]]; then
     echo -ne "\n\e[4mTHEME HELP PAGE\e[0m\n"
     echo -ne "USAGE:\n"
     echo -ne "\tsource theme [OPTION]\n\n"
     echo -ne "OPTIONS:\n"
     echo -ne "\t-c [THEME]\n"
-    echo -ne "\t\tChanges the terminal theme to the specified theme.\n"
-    echo -ne "\t-l\n"
+    echo -ne "\t\tChanges the CURRENT terminal theme to the specified theme.\n"
+    echo -ne "\t-p [THEME]\n"
+	echo -ne "\t\tChanges current and default theme (in .bashrc) to the specified theme.\n"
+	echo -ne "\t-l\n"
     echo -ne "\t\tLists all available themes.\n\n"
-    echo -ne "SUGGESTIONS:\n\tAdd alias theme='source theme' to your .bashrc.\n"
-    echo -ne "\tAdd PROMPT_COMMAND='PS1="\`_theme_[THEME]\`" add_venv_info' to your .bashrc to set the initial prompt.\n"
-    echo -ne "\tNote: add_venv_info adds virtual environment info to the beginning of the prompt.\n\n"
-elif [ "$1" == "-c" ]; then
-    new_theme=$2
-    # Check if new_theme matches a listed theme
-    if [[ "${theme[@]}" =~ "$2" ]]; then
-	# If theme is found, export PROMPT_COMMAND
-	temp='PS1="`_theme_'${new_theme}'`" add_venv_info'
-	export PROMPT_COMMAND=$temp
-    else
-	# If theme not found, print error message.
-	echo "Error: theme $2 not found. Use theme -l to see the available options."
-    fi
-
-elif [ "$1" == "-l" ]; then
-    
-    for (( c=0; c< ${#theme[*]}; c++ ))
-    do
-	echo -ne "${theme[c]}\n"
-    done
+    echo -ne "SETUP:\n"
+	echo -ne "\tSource prompt in your .bash_profile or .profile.\n"
+	echo -ne "\tAdd alias theme='source theme' to your .bashrc.\n"
+    echo -ne "\tAdd PROMPT_COMMAND='PS1="\`_theme_[THEME]\`"' to your .bashrc.\n"
+elif [[ "$1" == "-c" ]]; then
+	new_theme=$2
+	# Check if new_theme matches a listed theme
+	if [[ "${theme[@]}" =~ "$2" ]]; then
+		# Check if function exists.
+		if [[ $(type -t "_theme_${new_theme}") == "" ]]; then
+			echo "Error: function _theme_${new_theme} not found."
+		else
+			# If theme is found, export PROMPT_COMMAND
+			export PROMPT_COMMAND='PS1="`_theme_'${new_theme}'`"'
+		fi
+	else
+		# If theme not found, print error message.
+		echo "Error: theme $2 not found. Use theme -l to see the available options."
+	fi
+elif [[ "$1" == "-p" ]]; then
+	echo "This option is still under construction."
+	# Open .bashrc, look for _theme_.
+	# Parse with sed.
+	# Add some check to make sure file not open?
+	# [[-z $(lsof | grep '.bashrc')
+elif [[ "$1" == "-l" ]]; then
+	echo -ne "Available themes:\n"
+	echo -ne "-----------------\n"
+	for (( c=0; c< ${#theme[*]}; c++ )); do
+		echo -ne "    ${theme[c]}\n"
+	done
 else
-    echo -ne "Error: try running 'theme -help'.\n"
+	echo -ne "Error: try running 'theme -help'.\n"
 fi
+
+unset theme

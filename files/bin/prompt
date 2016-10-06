@@ -2,32 +2,32 @@
 # makes prompt
 
 # function for adding virtualenv info to prompt
-add_venv_info () {                                                                                                                                                                                               
-    if [ -z "$VIRTUAL_ENV_DISABLE_PROMPT" ] ; then                                                                                                                                                               
-        _OLD_VIRTUAL_PS1="$PS1"                                                                                                                                                                                  
-        if [ "x" != x ] ; then                                                                                                                                                                                   
-            PS1="$PS1"                                                                                                                                                                                           
-        else                                                                                                                                                                                                     
-            if [ "`basename \"$VIRTUAL_ENV\"`" = "__" ] ; then                                                                                                                                                   
-                # special case for Aspen magic directories                                                                                                                                                       
-                # see http://www.zetadev.com/software/aspen/                                                                                                                                                     
-                PS1="[`basename \`dirname \"$VIRTUAL_ENV\"\``] $PS1"                                                                                                                                             
-            elif [ "$VIRTUAL_ENV" != "" ]; then                                                                                                                                                                  
-                PS1="(`basename \"$VIRTUAL_ENV\"`)$PS1"                                                                                                                                                          
-            fi                                                                                                                                                                                                   
-        fi                                                                                                                                                                                                       
-        export PS1                                                                                                                                                                                               
-    fi                                                                                                                                                                                                        #%} 
+add_venv () {
+	if [[ ! -z ${VIRTUAL_ENV} ]]; then
+		echo $1$(basename ${VIRTUAL_ENV})$2
+	fi
 }
+export -f add_venv
 
-#colors, etc
 # function for setting non-bold 256 colors (fg & bg)
-function sc () { echo -ne "\[\e[0;38;5;$1;48;5;$2m\]$3\[\e[m\]"; }
+sc () { echo -ne "\[\e[0;38;5;$1;48;5;$2m\]$3\[\e[m\]"; }
 # function for setting bold 256 colors (fg & bg)
-function scb () { echo -ne "\[\e[1;38;5;$1;48;5;$2m\]$3\[\e[m\]"; }
-ESC="\[\e[";
-END="\[\e[m\]";
+scb () { echo -ne "\[\e[1;38;5;$1;48;5;$2m\]$3\[\e[m\]"; }
+export -f sc scb
+# Usage: $(sc FG_COLOR BG_COLOR STRING)
+# Colors should be numbers 1-256.
+# May want to single quote STRING.
 
+# Escape and end sequences
+ESC="\[\e["
+END="\[\e[m\]"
+export ESC END
+
+# Standard titlebar
+_theme_titlebar="\[\e]2;\u@\h \w\a\]"
+export _theme_titlebar
+
+# Colors
 BLUE="${ESC}0;34m\]";
 L_BLUE="${ESC}1;34m\]";
 GREEN="${ESC}0;32m\]";
@@ -86,145 +86,106 @@ _blue_steel_last="${L_BLUE}${brcorner}${line}${BLUE}${line2}${CYAN}${line2}${L_B
 
 # THEME FUNCTION
 function _theme_blue_steel () {
-    TEMP=$(ps aux | awk 'NR > 0 { s += $3 }; END {printf("%3.1f%",s)}')
-    TEMP_LEN=${#TEMP}
-    ncols=$(echo -ne $COLUMNS)
-    n=$((${ncols}-${TEMP_LEN}-72))
+	TEMP=$(ps aux | awk 'NR > 0 { s += $3 }; END {printf("%3.1f%%",s)}')
+	TEMP_LEN=${#TEMP}
+	ncols=$(echo -ne $COLUMNS)
+	n=$((${ncols}-${TEMP_LEN}-72))
 
-    var_lines=""
-#    if [[ ${n} -eq -30 ]]; then
-#	_blue_steel_output2="${END}${L_BLUE}]${END}${after_name2}";
-#    elif [[ ${n} -eq -40 ]]; then
-#	_blue_steel_output2="${END}${L_BLUE}]${END}${after_name3}";
-#    else
-#	for (( c=1; c<=n; c++ ))
-#	do
-#	    var_lines=${var_lines}"${_blue_steel_endline}";
-#	done
-#    fi
-    for (( c=1; c<=n; c++ ))
-    do
-	var_lines=${var_lines}"${_blue_steel_endline}";
-    done
+	var_lines=""
+#	if [[ ${n} -eq -30 ]]; then
+#		_blue_steel_output2="${END}${L_BLUE}]${END}${after_name2}";
+#	elif [[ ${n} -eq -40 ]]; then
+#		_blue_steel_output2="${END}${L_BLUE}]${END}${after_name3}";
+#	else
+#		for (( c=1; c<=n; c++ )); do
+#			var_lines=${var_lines}"${_blue_steel_endline}";
+#		done
+#	fi
+	for (( c=1; c<=n; c++ )); do
+		var_lines=${var_lines}"${_blue_steel_endline}";
+	done
 
-    echo -ne "${_blue_steel_output1}${TEMP}${_blue_steel_output2}${var_lines}\n${_blue_steel_last}";
-
+	echo -ne "${_blue_steel_output1}${TEMP}${_blue_steel_output2}${var_lines}"
+	echo -ne "\n${_blue_steel_last}";
 }
-
-unset titlebar;
-unset time;
-unset timeblock;
-unset name;
-unset lbracket;
-unset rbracket;
-unset nameblock;
-unset part1;
-unset after_name;
-unset lbrack;
-unset rbrack;
-unset line;
-unset line2;
-unset ltcorner;
-unset brcorner;
-
+export -f _theme_blue_steel
 #----END OF BLUE STEEL-----------------------------------------------------
 
 #----THEME X---------------------------------------------------------------
-
-_theme_x_titlebar="\[\e]2;\u@\h \w\a\]";
-_theme_x_name="${GRAY}[${END}${WHITE}\u${END}${PURPLE}@${END}${WHITE}\h${END}${GRAY}]${END}";
-
-_theme_x_output1="${_theme_x_titlebar}${_theme_x_name}";
-_theme_x_last="\\$ ";
-
-#THEME FUNCTION
 function _theme_theme_x () {
-    echo -ne "${_theme_x_output1}${_theme_x_last}";
+	# Colors.
+	GRAY="${ESC}1;30m\]"
+	WHITE="${ESC}1;37m\]"
+	PURPLE="${ESC}0;35m\]"
+
+	# Setup.
+	_theme_x_name="${GRAY}[${END}${WHITE}\u${END}${PURPLE}@${END}${WHITE}\h${END}${GRAY}]${END}"
+	_theme_x_output1="${_theme_x_titlebar}${_theme_x_name}"
+	_theme_x_last="\\$ "
+
+	echo -ne "${_theme_titlebar}$(add_venv '(' ')')${_theme_x_name}${_theme_x_last}"
 }
-
-unset _theme_x_titlebar
-unset _theme_x_name
-#unset _theme_x_output1
-#unset _theme_x_last
-
+export -f _theme_theme_x
 #----END OF THEME X--------------------------------------------------------
 
 #----DISTINGUISHED THEME --------------------------------------------------
 # requires xterm-256color
 # special colors
-_dist_titlebar="\[\e]2;\u@\h: [\w]\a\]";
-_dist_bg=234
-_dist_name=$(scb 229 ${_dist_bg} '\u')
-_dist_at=$(scb 256 ${_dist_bg} '@')
-_dist_host=$(scb 67 ${_dist_bg} '\h')
-_dist_col=$(scb 256 ${_dist_bg} ':')
-_dist_lb=$(scb 242 ${_dist_bg} '[')
-_dist_rb=$(scb 242 ${_dist_bg} ']')
-_dist_path=${_dist_lb}$(scb 166 ${_dist_bg} '\w')${_dist_rb}
-_dist_end=$(scb 36 ${_dist_bg} '$')
-
 function _theme_distinguished() {
-    echo -ne "${_dist_titlebar}${_dist_name}${_dist_at}${_dist_host}${_dist_col}${_dist_path}${_dist_end} ";
-}
+	_dist_bg=234
+	_dist_name=$(scb 229 ${_dist_bg} '\u')
+	_dist_at=$(scb 256 ${_dist_bg} '@')
+	_dist_host=$(scb 67 ${_dist_bg} '\h')
+	_dist_col=$(scb 256 ${_dist_bg} ':')
+	_dist_lb=$(scb 242 ${_dist_bg} '[')
+	_dist_rb=$(scb 242 ${_dist_bg} ']')
+	_dist_path=${_dist_lb}$(scb 166 ${_dist_bg} '\w')${_dist_rb}
+	_dist_end=$(scb 36 ${_dist_bg} '$')
 
+	echo -ne "${_theme_titlebar}$(add_venv '[' ']')"
+	echo -ne "${_dist_name}${_dist_at}${_dist_host}"
+	echo -ne "${_dist_col}${_dist_path}${_dist_end} "
+}
+export -f _theme_distinguished
 #----END OF DISTINGUISHED THEME--------------------------------------------
 
 #----RANDOM COLOR THEME ---------------------------------------------------
-_rc_titlebar="\[\e]2;\u@\h: [\w]\a\]";
 function _theme_random_color() {
-    color=$(($RANDOM % 7 + 31)) # set 31 to 30 for dark on light
-    color256=$(($RANDOM % 254 + 1)) # 1-255 (no black since bg is black)
-    echo -ne ${_rc_titlebar}$(scb ${color256} 16 '\u@\h:[\w]$')" "    # set 1 to 0 for dark on light}
+	color=$(($RANDOM % 7 + 31)) # set 31 to 30 for dark on light
+	color256=$(($RANDOM % 239 + 17)) # 17-255 (no black since bg is black)
+	echo -ne ${_theme_titlebar}$(add_venv '(' ')')$(scb 1 16 '\u@\h:[\w]$')" "
+	# Note: set 1 to 0 for dark on light}
 }
+export -f _theme_random_color
 #----END OF RANDOM COLOR --------------------------------------------------
 
 #----RANDOM COLOR XTREME THEME --------------------------------------------
-_rcx_titlebar="\[\e]2;\u@\h: [\w]\a\]";
 function _theme_random_color_xtreme() {
 
-    #col_range="7 + 31"
-    col_range="254 + 1"
-    color1=$(($RANDOM % ${col_range})) # 1-255 (no black since bg is black)
-    color2=$(($RANDOM % ${col_range})) # 1-255 (no black since bg is black)
-    color3=$(($RANDOM % ${col_range})) # 1-255 (no black since bg is black)
-    color4=$(($RANDOM % ${col_range})) # 1-255 (no black since bg is black)
-    color5=$(($RANDOM % ${col_range})) # 1-255 (no black since bg is black)
-    color6=$(($RANDOM % ${col_range})) # 1-255 (no black since bg is black)
-    color7=$(($RANDOM % ${col_range})) # 1-255 (no black since bg is black)
-    color8=$(($RANDOM % ${col_range})) # 1-255 (no black since bg is black)
+	# Random colors
+	#col_range="7 + 31"
+	col_range="239 + 17"
+	color1=$(($RANDOM % ${col_range})) 
+	color2=$(($RANDOM % ${col_range})) 
+	color3=$(($RANDOM % ${col_range})) 
+	color4=$(($RANDOM % ${col_range})) 
+	color5=$(($RANDOM % ${col_range})) 
+	color6=$(($RANDOM % ${col_range})) 
+	color7=$(($RANDOM % ${col_range})) 
+	color8=$(($RANDOM % ${col_range})) 
+	# 17-255 (no black since bg is black)
+	
+	# Background color
+	rcx_bg=16
 
-    rcx_bg=16
-
-    echo -ne "${_rcx_titlebar}\
-$(scb ${color1} ${rcx_bg} '\u')\
-$(scb ${color2} ${rcx_bg} '@')\
-$(scb ${color3} ${rcx_bg} '\h')\
-$(scb ${color4} ${rcx_bg} ':')\
-$(scb ${color5} ${rcx_bg} '[')\
-$(scb ${color6} ${rcx_bg} '\w')\
-$(scb ${color7} ${rcx_bg} ']')\
-$(scb ${color8} ${rcx_bg} '$') "
+	# Output
+	echo -ne "${_theme_titlebar}$(add_venv '(' ')')"
+	echo -ne "$(scb ${color1} ${rcx_bg} '\u')$(scb ${color2} ${rcx_bg} '@')"
+	echo -ne "$(scb ${color3} ${rcx_bg} '\h')$(scb ${color4} ${rcx_bg} ':')"
+	echo -ne "$(scb ${color5} ${rcx_bg} '[')$(scb ${color6} ${rcx_bg} '\w')"
+	echo -ne "$(scb ${color7} ${rcx_bg} ']')$(scb ${color8} ${rcx_bg} '$') "
 }
-#----END OF RANDOM COLOR --------------------------------------------------
+export -f _theme_random_color_xtreme
+#----END OF RANDOM COLOR XTREME -------------------------------------------
 
-
-#unset colors, etc;
-unset ESC;
-unset END;
-unset BLUE;
-unset L_BLUE;
-unset RED;
-unset L_RED;
-unset GREEN;
-unset L_GREEN;
-unset CYAN;
-unset L_CYAN;
-unset PURPLE;
-unset L_PURPLE;
-unset GRAY;
-unset L_GRAY;
-unset YELLOW;
-unset BROWN;
-unset BLACK;
-
-#end of script
+# End of script

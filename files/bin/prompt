@@ -153,7 +153,7 @@ export -f _theme_distinguished
 function _theme_random_color() {
 	color=$(($RANDOM % 7 + 31)) # set 31 to 30 for dark on light
 	color256=$(($RANDOM % 239 + 17)) # 17-255 (no black since bg is black)
-	echo -ne ${_theme_titlebar}$(add_venv '(' ')')$(scb 1 16 '\u@\h:[\w]$')" "
+	echo -ne ${_theme_titlebar}$(add_venv '(' ')')$(scb ${color256} 16 '\u@\h:[\w]$')" "
 	# Note: set 1 to 0 for dark on light}
 }
 export -f _theme_random_color

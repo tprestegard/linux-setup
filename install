@@ -60,7 +60,11 @@ for file in ${file_list}; do
 	echo "Setting up ${dest}."
 
 	# Check if file or symlink already exists.
-	if [[ -f ${dest} ]] || [[ -d ${dest} ]]; then
+	if [[ -L ${dest} ]]; then
+		# If symlink exists, just delete it.
+		echo -e "\tDeleting old symbolic link ${dest}."
+		rm ${dest}
+	elif [[ -f ${dest} ]] || [[ -d ${dest} ]]; then
 		# If file already exists, move to ~/${STORE_DIR}.
 		if [[ -e ${STORE_DIR} ]] && [[ ! -d ${STORE_DIR} ]]; then
 			echo -e "\tError: ${STORE_DIR} exists and is not a directory."
@@ -71,10 +75,6 @@ for file in ${file_list}; do
 		fi
 		echo -e "\tMoving file ${dest} to ${STORE_DIR}."
 		mv ${dest} ${STORE_DIR}
-	elif [[ -L ${dest} ]]; then
-		# If symlink exists, just delete it.
-		echo -e "\tDeleting old symbolic link ${dest}."
-		rm ${dest}
 	fi
 	
 	# Symlink file.

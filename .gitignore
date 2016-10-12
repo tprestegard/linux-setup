@@ -4,3 +4,5 @@
 # SSH config file (if it somehow makes it in unencrypted)
 files/config
 
+# Store folder
+.linux-setup-store

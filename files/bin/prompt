@@ -9,104 +9,107 @@ add_venv () {
 }
 export -f add_venv
 
-# function for setting non-bold 256 colors (fg & bg)
+# Utilities  ----------------------------------------------------
+# Function for setting non-bold 256 colors (fg & bg).
 sc () { echo -ne "\[\e[0;38;5;$1;48;5;$2m\]$3\[\e[m\]"; }
-# function for setting bold 256 colors (fg & bg)
+# Function for setting bold 256 colors (fg & bg).
 scb () { echo -ne "\[\e[1;38;5;$1;48;5;$2m\]$3\[\e[m\]"; }
-export -f sc scb
 # Usage: $(sc FG_COLOR BG_COLOR STRING)
 # Colors should be numbers 1-256.
 # May want to single quote STRING.
+export -f sc scb
 
-# Escape and end sequences
-ESC="\[\e["
-END="\[\e[m\]"
-export ESC END
+# Function for setting any colors (use full color string).
+color () { echo -n "\[\e[$1m\]$2\[\e[m\]"; }
+# Usage: $(color COLOR_STRING STRING)
+export -f color
+
+# Time function
+get_time () { echo -ne "$(date +$1)"; }
 
 # Standard titlebar
 _theme_titlebar="\[\e]2;\u@\h \w\a\]"
 export _theme_titlebar
 
-# Colors
-BLUE="${ESC}0;34m\]";
-L_BLUE="${ESC}1;34m\]";
-GREEN="${ESC}0;32m\]";
-L_GREEN="${ESC}1;32m\]";
-CYAN="${ESC}0;36m\]";
-L_CYAN="${ESC}1;36m\]";
-RED="${ESC}0;31m\]";
-L_RED="${ESC}1;31m\]";
-PURPLE="${ESC}0;35m\]";
-L_PURPLE="${ESC}1;35m\]";
-GRAY="${ESC}1;30m\]";
-L_GRAY="${ESC}0;37m\]";
-YELLOW="${ESC}1;33m\]";
-WHITE="${ESC}1;37m\]";
-BROWN="${ESC}0;33m\]";
-BLACK="${ESC}0;30m\]";
-
 #--BLUE STEEL THEME------------------------------------------------
-
-#parts
-ltcorner="\xE2\x94\x8C";
-brcorner="\xE2\x94\x94";
-line="\xE2\x94\x80";
-line2="${line}${line}";
-lbrack="\xE2\x9F\xAA";
-rbrack="\xE2\x9F\xAB";
-
-#lines and corners
-part1="${WHITE}${ltcorner}${line}${L_BLUE}${line2}${BLUE}${line2}${CYAN}${line2}${END}";
-after_name="${CYAN}${line2}${BLUE}${line2}${L_BLUE}${line2}${WHITE}${line2}${L_BLUE}${line2}${END}";
-#after_name="${CYAN}${line2}${line}${BLUE}${line2}${L_BLUE}${line2}${WHITE}${line2}${line}${L_BLUE}${line2}${END}";
-#after_name2="${CYAN}${line2}${line}${BLUE}${line2}${L_BLUE}${line2}${WHITE}${line2}${END}";
-#after_name3="${CYAN}${line2}${BLUE}${line2}${L_BLUE}${line2}${WHITE}${line2}${END}";
-
-
-#name
-name="${BLUE}\u${END}${L_BLUE}@${END}${BLUE}\h${END}";
-lbracket="${L_BLUE}${lbrack}${END}";
-rbracket="${L_BLUE}${rbrack}${END}";
-nameblock="${lbracket}${name}${rbracket}";
-
-#time
-#time='\\@';
-time=$(date +'%I:%M:%S %p')
-time='\\t';
-timeblock="${L_BLUE}[${END}${BLUE}${time}${END}${L_BLUE}]${END}";
-
-#titlebar
-titlebar="\[\e]2;\u@\h \w\a\]";
-
-#THEME FINAL STUFF
-_blue_steel_output1="${titlebar}${part1}${nameblock}${after_name}${timeblock}${after_name}${L_BLUE}[${END}${BLUE}";
-_blue_steel_output2="${END}${L_BLUE}]${END}${after_name}";
-_blue_steel_endline="${L_BLUE}${line}${END}";
-_blue_steel_last="${L_BLUE}${brcorner}${line}${BLUE}${line2}${CYAN}${line2}${L_BLUE}>${END} ";
 
 # THEME FUNCTION
 function _theme_blue_steel () {
-	TEMP=$(ps aux | awk 'NR > 0 { s += $3 }; END {printf("%3.1f%%",s)}')
-	TEMP_LEN=${#TEMP}
-	ncols=$(echo -ne $COLUMNS)
-	n=$((${ncols}-${TEMP_LEN}-72))
+	# Colors
+	BLUE="0;34"; L_BLUE="1;34"; CYAN="0;36"; WHITE="1;37"
 
-	var_lines=""
-#	if [[ ${n} -eq -30 ]]; then
-#		_blue_steel_output2="${END}${L_BLUE}]${END}${after_name2}";
-#	elif [[ ${n} -eq -40 ]]; then
-#		_blue_steel_output2="${END}${L_BLUE}]${END}${after_name3}";
-#	else
-#		for (( c=1; c<=n; c++ )); do
-#			var_lines=${var_lines}"${_blue_steel_endline}";
-#		done
-#	fi
-	for (( c=1; c<=n; c++ )); do
-		var_lines=${var_lines}"${_blue_steel_endline}";
+	# Variable which calculates width.
+	p_width=0
+
+	# Components
+	ltcorner="\xE2\x94\x8C"; brcorner="\xE2\x94\x94"
+	lbrack="\xE2\x9F\xAA"; rbrack="\xE2\x9F\xAB"
+	line="\xE2\x94\x80"
+
+	# Useful combinations
+	line2="${line}${line}"
+	color5=$(color ${CYAN} ${line2})$(color ${BLUE} ${line2})
+	color5+=$(color ${L_BLUE} ${line2})$(color ${WHITE} ${line2})
+	color5+=$(color ${L_BLUE} ${line2})
+	# Length of color5: 5.
+
+	# Before name
+	before_name=$(color ${WHITE} ${ltcorner}${line})$(color ${L_BLUE} ${line2})
+	before_name+=$(color ${BLUE} ${line2})$(color ${CYAN} ${line2})
+	# length = 2 + 3*${#line2}
+	p_width=$((p_width + 8))
+
+	# Name
+	user=$(whoami); host=$(hostname)
+	name=$(color ${BLUE} ${user})$(color ${L_BLUE} '@')$(color ${BLUE} ${host})
+	nameblock=$(color ${L_BLUE} ${lbrack})${name}$(color ${L_BLUE} ${rbrack})
+	# length = 3 + ${#user} + ${#host}
+	p_width=$((p_width + 3 + ${#user} + ${#host}))
+
+	# After name - use ${color5}
+	p_width=$((p_width + 10))
+
+	# Time block
+	time=$(date +'%H:%M:%S')
+	#time=$(get_time '%H:%M:%S')
+	timeblock=$(color ${L_BLUE} '[')$(color ${BLUE} ${time})
+	timeblock+=$(color ${L_BLUE} ']')
+	# length = 2 + ${#time}
+	p_width=$((p_width + 2 + ${#time}))
+
+	# After time - use ${color5}
+	p_width=$((p_width + 10))
+
+	# CPU percentage block.
+	if [[ -z ${VIRTUAL_ENV} ]]; then
+		cpu=$(ps aux | awk 'NR > 0 { s += $3 }; END {printf("%3.1f%%",s)}')
+		cpublock=$(color ${L_BLUE} '[')$(color ${BLUE} ${cpu})$(color ${L_BLUE} ']')
+		# length = ${#cpu}
+		p_width=$((p_width + ${#cpu} + 2))
+	else
+		cpublock=$(add_venv '[' ']')
+		p_width=$((p_width + ${#cpublock}))
+	fi
+
+	# After CPU - use ${color5}
+	p_width=$((p_width + 10))
+
+	# Rest of line.
+	ncol=$((COLUMNS - p_width))
+	lineend=""
+	for (( c=1; c<=${ncol}; c++ )); do
+		lineend+=$(color ${BLUE} ${line})
 	done
 
-	echo -ne "${_blue_steel_output1}${TEMP}${_blue_steel_output2}${var_lines}"
-	echo -ne "\n${_blue_steel_last}";
+	# Second line.
+	second_line=$(color ${L_BLUE} ${brcorner}${line})$(color ${BLUE} ${line2})
+	second_line+=$(color ${CYAN} ${line2})$(color ${L_BLUE} '>')' '
+	
+	# Full prompt
+	full=${_theme_titlebar}${before_name}${nameblock}${color5}${timeblock}
+	full+=${color5}${cpublock}${color5}${lineend}'\n'${second_line}
+	echo -ne "${full}"
+
 }
 export -f _theme_blue_steel
 #----END OF BLUE STEEL-----------------------------------------------------
@@ -114,16 +117,13 @@ export -f _theme_blue_steel
 #----THEME X---------------------------------------------------------------
 function _theme_theme_x () {
 	# Colors.
-	GRAY="${ESC}1;30m\]"
-	WHITE="${ESC}1;37m\]"
-	PURPLE="${ESC}0;35m\]"
+	GRAY="1;30"; WHITE="1;37"; PURPLE="0;35"
 
 	# Setup.
-	_theme_x_name="${GRAY}[${END}${WHITE}\u${END}${PURPLE}@${END}${WHITE}\h${END}${GRAY}]${END}"
-	_theme_x_output1="${_theme_x_titlebar}${_theme_x_name}"
-	_theme_x_last="\\$ "
+	full=$(color ${GRAY} '[')$(color ${WHITE} '\u')$(color ${PURPLE} '@')
+	full+=$(color ${WHITE} '\h')$(color ${GRAY} ']')$(color ${WHITE} '$')' '
 
-	echo -ne "${_theme_titlebar}$(add_venv '(' ')')${_theme_x_name}${_theme_x_last}"
+	echo -ne "${_theme_titlebar}$(add_venv '(' ')')${full}"
 }
 export -f _theme_theme_x
 #----END OF THEME X--------------------------------------------------------
@@ -142,7 +142,7 @@ function _theme_distinguished() {
 	_dist_path=${_dist_lb}$(scb 166 ${_dist_bg} '\w')${_dist_rb}
 	_dist_end=$(scb 36 ${_dist_bg} '$')
 
-	echo -ne "${_theme_titlebar}$(add_venv '[' ']')"
+	echo -ne "${_theme_titlebar}$(sc 147 16 $(add_venv '[' ']'))"
 	echo -ne "${_dist_name}${_dist_at}${_dist_host}"
 	echo -ne "${_dist_col}${_dist_path}${_dist_end} "
 }

@@ -25,7 +25,7 @@ color () { echo -n "\[\e[$1m\]$2\[\e[m\]"; }
 export -f color
 
 # Time function
-get_time () { echo -ne "$(date +$1)"; }
+get_time () { echo -ne $(date +"$@"); }
 
 # Standard titlebar
 _theme_titlebar="\[\e]2;\u@\h \w\a\]"
@@ -70,9 +70,8 @@ function _theme_blue_steel () {
 	p_width=$((p_width + 10))
 
 	# Time block
-	time=$(date +'%H:%M:%S')
-	#time=$(get_time '%H:%M:%S')
-	timeblock=$(color ${L_BLUE} '[')$(color ${BLUE} ${time})
+	time=$(get_time '%H:%M:%S')
+	timeblock=$(color ${L_BLUE} '[')$(color ${BLUE} "${time}")
 	timeblock+=$(color ${L_BLUE} ']')
 	# length = 2 + ${#time}
 	p_width=$((p_width + 2 + ${#time}))

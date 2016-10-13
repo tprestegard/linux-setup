@@ -33,7 +33,11 @@ for file in ${enc_files}; do
 
 	if [[ "${overwrite}" =~ ^y|Y ]]; then
 		echo -e "\nYou may need to enter your GPG key passphrase."
+		# Decrypt file.
 		gpg2 --yes --out ${out_file} --decrypt ${file}
+		# Fix permissions (assumes encrypted file has correct permissions)
+		chmod --reference=${file} ${out_file}
+		
 	fi
 done
 

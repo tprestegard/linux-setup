@@ -89,6 +89,6 @@ fi
 
 # Import functions (Debian)
 if [[ $(lsb_release -si) == "Debian" ]]; then
-	. $HOME/functions
+	. $HOME/.functions
 fi
 

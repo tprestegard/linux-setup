@@ -12,7 +12,7 @@ STORE_DIR=".linux-setup-store"
 declare -A nonhomefiles
 nonhomefiles["config"]="${HOME}/.ssh"
 
-# Manage custom file permissions
+# Manage custom file permissions.
 chmod 600 files/config.encrypted
 
 # Main code ##########################################################

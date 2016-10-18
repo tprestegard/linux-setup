@@ -12,10 +12,6 @@ if [[ -d "$HOME/bin" ]] ; then
     export PATH="$HOME/bin:$PATH"
 fi
 
-# Set environment variables (if needed)
-# Bash history file size.
-HISTFILESIZE=1000
-
 # Import functions (for Ubuntu).
 # For Debian, import them in .bashrc.
 if [[ $(lsb_release -si) == "Ubuntu" ]]; then
@@ -30,7 +26,9 @@ if [[ "$TERM" == "xterm" ]]; then
 fi
 
 # Custom prompt
-source $HOME/bin/prompt
+if [[ -f "$HOME/bin/prompt" ]]; then
+	source $HOME/bin/prompt
+fi
 
 # Source .bashrc if running bash
 if [ -n "$BASH_VERSION" ]; then

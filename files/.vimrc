@@ -40,4 +40,4 @@ noremap <silent> <expr> <Down> ScreenMovement("<Down>")
 "noremap <silent> <expr> 0 ScreenMovement("0")
 "noremap <silent> <expr> ^ ScreenMovement("^")
 "noremap <silent> <expr> $ ScreenMovement("$")
-
+"nnoremap <silent> <Esc> <Esc>`^

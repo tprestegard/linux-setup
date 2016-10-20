@@ -70,7 +70,7 @@ fi
 # Set up prompt.
 #source $HOME/bin/prompt
 if [[ -f "$HOME/bin/prompt" ]]; then
-	xport PROMPT_COMMAND='PS1=`_theme_distinguished`'
+	export PROMPT_COMMAND='PS1=`_theme_distinguished`'
 fi
 
 # Other setup

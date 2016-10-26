@@ -22,13 +22,12 @@ class Visit:
 
 class Plan:
 	"""Model for health care plan."""
-	def __init__(self, name, deductible, copay_bd, copay_ad, copay_special, \
-	             premium, oop_max, hsa, hsa_amount=0):
+	def __init__(self, name, deductible, copay_bd, copay_ad, \
+	             premium, oop_max, hsa, coinsurance, hsa_amount=0):
 		self.name = name # plan name
 		self.deductible = deductible # deductible amount ($)
 		self.copay_bd = copay_bd # copay before deductible is met ($)
 		self.copay_ad = copay_ad # copay after deductible is met ($)
-		self.copay_special = copay_special # copay for specialists ($)
 		self.hsa = hsa # is there an HSA? (boolean)
 		if (not hsa and hsa_amount != 0):
 			self.hsa_amount = 0
@@ -73,10 +72,15 @@ class Plan:
 		print "\tTotal annual cost:\t%.2f" % total_cost
 
 
-# Main code
+# Main code --------------------------------------------------------------------
+# Set up plans
 iyc_plan = Plan(name="It's Your Choice Health Plan", deductible=217, \
-                copay_bd=15, copay_ad=15, copay_special=25, hsa=False, \
-                premium=217)
+                copay_bd=[15,25], copay_ad=[15,25], hsa=False, \
+                premium=219, oop_max=2500, coinsurance=0.1)
+hdhp_plan = Plan(name="It's Your Choice HDHP", deductible=3000, \
+                 copay_bd=[0,0], copay_ad=[15,25], hsa=True, \
+                 hsa_amount=1500, premium=82, oop_max=5000, \
+                 coinsurance=0.1)
 
 iyc_plan.add_visit(Visit(visit_type="normal", cost=200))
 iyc_plan.print_annual_cost()

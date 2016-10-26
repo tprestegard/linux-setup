@@ -1,5 +1,8 @@
 " color scheme
-colorscheme distinguished
+"colorscheme distinguished
+colorscheme badwolf
+let g:badwolf_darkgutter = 1
+"let g:badwolf_tabline = 0
 
 " syntax processing
 syntax enable
@@ -41,3 +44,4 @@ noremap <silent> <expr> <Down> ScreenMovement("<Down>")
 "noremap <silent> <expr> ^ ScreenMovement("^")
 "noremap <silent> <expr> $ ScreenMovement("$")
 "nnoremap <silent> <Esc> <Esc>`^
+

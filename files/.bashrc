@@ -86,6 +86,9 @@ alias emacs='emacs -nw'
 if [[ -f "$HOME/bin/theme" ]]; then
 	alias theme='source theme' # allows theme to be changed on-the-fly
 fi
+# sudo/su environment aliases
+alias sudoE='sudo -E '
+alias sup='su -p'
 
 # Import functions (Debian)
 if [[ $(lsb_release -si) == "Debian" ]]; then

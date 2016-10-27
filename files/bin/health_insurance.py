@@ -115,7 +115,7 @@ hdhp_plan = Plan(name="It's Your Choice HDHP", deductible=3000, \
                  hsa_amount=1500, premium=82, oop_max=5000, \
                  coinsurance=0.1)
 
-# Add visits
+# Add visits.
 for ii in range(0,20):
 	new_visit = Visit(visit_type="normal", cost=200)
 	iyc_plan.add_visit(new_visit)

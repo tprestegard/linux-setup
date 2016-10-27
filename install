@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# Install script
+# Install script.
 
 # Parameters.
 FILE_DIR="files"

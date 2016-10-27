@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+# Notes:
+#	co-pays don't count towards deductible.
+#	co-pays do count towards OOPL.
+#	deductible counts towards OOPL.
+
 class Visit:
 	"""Model for provider visits."""
 	def __init__(self, cost, visit_type="normal", description=None):
@@ -26,13 +31,16 @@ class Plan:
 	             premium, oop_max, hsa, coinsurance, hsa_amount=0):
 		self.name = name # plan name
 		self.deductible = deductible # deductible amount ($)
-		self.copay_bd = copay_bd # copay before deductible is met ($)
-		self.copay_ad = copay_ad # copay after deductible is met ($)
+		# copay before deductible is met ($)
+		self.copay_bd = {"normal": copay_bd[0], "specialist": copay_bd[1]}
+		# copay after deductible is met ($)
+		self.copay_ad = {"normal": copay_ad[0], "specialist": copay_ad[1]}
 		self.hsa = hsa # is there an HSA? (boolean)
 		if (not hsa and hsa_amount != 0):
 			self.hsa_amount = 0
 		else:
 			self.hsa_amount = hsa_amount
+		self.coinsurance = coinsurance # Coinsurance (fraction).
 		self.premium = premium # monthly premium ($)
 		self.oop_max = oop_max # out-of-pocket maximum ($)
 
@@ -43,22 +51,48 @@ class Plan:
 		self.__oop_met = False
 		# total cost (make not directly modifiable?)	
 		self.__cost = 0
-		# Co-pay amounts
-		self.__copay_cost = 0
+		# Lists for tracking visit cost and amount paid.
+		self.__vcost = []
+		self.__vpaid = []
 		# total number of visits
-		self.__visits = 0
+		self.__num_visits = 0
 
 	def add_visit(self, visit):
-		# if not ded_met
-		#	do something
+	
+		# total paid for visit.
+		visit_paid = 0	
+
+		# If OOP max is met, nothing is paid.
+		if self.__oop_met:
+			pass
+		else:		
+			# If deductible is met:
+			if self.__ded_met:
+				visit_paid += self.copay_ad[visit.visit_type]
+				visit_paid += visit.cost * self.coinsurance
+			else:
+				visit_paid += self.copay_bd[visit.visit_type]
+				if (self.deductible < (visit.cost + self.__cost)):
+					over_ded = (visit.cost + self.__cost) - self.deductible
+					visit_paid += (visit.cost - over_ded) + self.coinsurance*over_ded
+					self.__ded_met = True
+				else:
+					visit_paid += visit.cost
 		
-		# if not oop_met
-		#	do something
-		
-		# if specialist visit
-		#	calculate co-pay cost
-		self.__cost += visit.cost
-		self.__visits += 1
+		# Check again if OOP max is met, subtract difference if so.
+		if (not self.__oop_met and self.__cost > self.oop_max):
+			visit_paid = self.oop_max - self.__cost
+			self.__cost = self.oop_max
+			self.__oop_met = True
+
+		# Append to visit cost/paid lists.
+		self.__vcost.append(visit.cost)
+		self.__vpaid.append(visit_paid)
+
+		# Final stuff.
+		self.__cost += visit_paid
+		self.__num_visits += 1
+
 
 	def print_annual_cost(self):
 		total_cost = self.__cost + self.premium*12.0
@@ -66,10 +100,9 @@ class Plan:
 		# Print information.
 		print "Total costs of %s:" % self.name
 		print "\tPremiums:\t\t%.2f" % (self.premium*12.0)
-		print "\tVisits (%i):\t\t%.2f" % (self.__visits, self.__cost)
-		print "\tCo-pays:\t\t%.2f" % self.__copay_cost
+		print "\tVisits (%i):\t\t%.2f" % (self.__num_visits, self.__cost)
 		print "\t---------------------------------"
-		print "\tTotal annual cost:\t%.2f" % total_cost
+		print "\tTotal annual cost:\t%.2f\n" % total_cost
 
 
 # Main code --------------------------------------------------------------------
@@ -82,5 +115,12 @@ hdhp_plan = Plan(name="It's Your Choice HDHP", deductible=3000, \
                  hsa_amount=1500, premium=82, oop_max=5000, \
                  coinsurance=0.1)
 
-iyc_plan.add_visit(Visit(visit_type="normal", cost=200))
+# Add visits
+for ii in range(0,20):
+	new_visit = Visit(visit_type="normal", cost=200)
+	iyc_plan.add_visit(new_visit)
+	hdhp_plan.add_visit(new_visit)
+
+# Print results.
 iyc_plan.print_annual_cost()
+hdhp_plan.print_annual_cost()

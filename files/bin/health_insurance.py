@@ -104,7 +104,10 @@ class Plan:
 		print "\t---------------------------------"
 		print "\tTotal annual cost:\t%.2f\n" % total_cost
 
-
+	def print_visit_breakdown(self):
+		for vp,vc in zip(self.__vpaid,self.__vcost):
+			print 
+		
 # Main code --------------------------------------------------------------------
 # Set up plans
 iyc_plan = Plan(name="It's Your Choice Health Plan", deductible=217, \

@@ -70,7 +70,13 @@ fi
 # Set up prompt.
 #source $HOME/bin/prompt
 if [[ -f "$HOME/bin/prompt" ]]; then
-	export PROMPT_COMMAND='PS1=`_theme_distinguished`'
+	export PROMPT_COMMAND='PS1=`_theme_random_color`'
+else
+	# Default prompt
+	titlebar="\[\e]2;\u@\h \w\a\]"
+	user="\[\e[1;35m\]\u\[\e[m\]@\[\e[1;33m\]\h\[\e[m\]"
+	path_list="\[\e[1;31m\]\w\[\e[m\]"
+	export PS1="${titlebar}[${user}:${path_list}]\$ "
 fi
 
 # Other setup

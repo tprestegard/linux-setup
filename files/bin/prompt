@@ -150,8 +150,8 @@ export -f _theme_distinguished
 
 #----RANDOM COLOR THEME ---------------------------------------------------
 function _theme_random_color() {
-	color=$(($RANDOM % 7 + 31)) # set 31 to 30 for dark on light
-	color256=$(($RANDOM % 239 + 17)) # 17-255 (no black since bg is black)
+	#color=$(($RANDOM % 7 + 31)) # set 31 to 30 for dark on light
+	color256=$(($RANDOM % 215 + 17)) # 17-231 (no black since bg is black)
 	echo -ne ${_theme_titlebar}$(add_venv '(' ')')$(scb ${color256} 16 '\u@\h:[\w]$')" "
 	# Note: set 1 to 0 for dark on light}
 }
@@ -163,7 +163,7 @@ function _theme_random_color_xtreme() {
 
 	# Random colors
 	#col_range="7 + 31"
-	col_range="239 + 17"
+	col_range="215 + 17" # 17-231
 	color1=$(($RANDOM % ${col_range})) 
 	color2=$(($RANDOM % ${col_range})) 
 	color3=$(($RANDOM % ${col_range})) 
@@ -186,5 +186,61 @@ function _theme_random_color_xtreme() {
 }
 export -f _theme_random_color_xtreme
 #----END OF RANDOM COLOR XTREME -------------------------------------------
+
+#----NEW COLOR THEME ------------------------------------------------------
+# Based on 256-xterm-colors script
+#  Randomly pick a block starting with 17-21, 52-57, 88-93, 124-129, 160-165, 196-201
+#  and use the 6 colors (ex: 17,23,29,35,41,47) in it to make the prompt.
+# Optional functionality: add an argument to choose the block start number?
+# FIX: make it so the background increments by one each time.
+# Should it be foreground or background? Background might be too distracting...
+function _theme_gradient() {
+	color_array=(17 18 19 20 21 52 53 54 55 56 57 88 89 90 91 92 93)
+	color_array+=(124 125 126 127 128 129 160 161 162 163 164 165)
+	color_array+=(196 197 198 199 200 201)
+
+	# Background color.
+	bg=16
+
+	# Can pass argument to pick theme start color.
+	# Otherwise, it's randomized.
+	if [[ "$#" -eq 1 ]]; then
+		startcol=${color_array[$1]}
+	else
+		startnum=$(($RANDOM % ${#color_array[@]}))
+		startcol=${color_array[${startnum}]}
+	fi
+
+	# Get full prompt.
+	prompt="$(whoami)@$(hostname):[$(dirs)]$"
+
+	# Output
+	#echo -ne "${_theme_titlebar}$(add_venv '\xE2\x9F\xAA' '\xE2\x9F\xAB')"
+	echo -ne "${_theme_titlebar}$(add_venv '{' '}')"
+
+	# Loop over colors
+	lett_col=${startcol}
+	step=0
+	for (( i=0; i<${#prompt}; i++ )); do
+		# Determine letter color. 
+		let "lett_col += step"
+		
+		# Print letter.
+		echo -ne "$(scb ${lett_col} ${bg} ${prompt:$i:1})"
+		
+		# Determine increment or decrement for next letter.
+		if [[ "${lett_col}" -eq "${startcol}" ]]; then
+			step=6
+		elif [[ "${lett_col}" -eq $((${startcol}+30)) ]]; then
+			step=-6
+		fi
+
+	done
+	# Add space.
+	echo -ne " "
+
+}
+export -f _theme_gradient
+
 
 # End of script

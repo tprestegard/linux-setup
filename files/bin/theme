@@ -5,19 +5,24 @@ theme_list[1]="theme_x"
 theme_list[2]="distinguished"
 theme_list[3]="random_color"
 theme_list[4]="random_color_xtreme"
+theme_list[5]="gradient (slow for long directory trees)"
 
 # Handle arguments.
-if [[ $# == 0 ]] || [[ "$1" == "-h" ]]; then
+if [[ $# == 0 ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo -ne "\n\e[4mTHEME HELP PAGE\e[0m\n"
     echo -ne "USAGE:\n"
-    echo -ne "\ttheme [OPTION]\n\n"
+    echo -ne "\ttheme [OPTION] [ARGS]\n\n"
     echo -ne "OPTIONS:\n"
 	echo -ne "\t-h\n"
 	echo -ne "\t\tDisplays this help dialog.\n"
     echo -ne "\t-c [THEME]\n"
     echo -ne "\t\tChanges the current terminal theme to the specified theme.\n"
+	echo -ne "\t\tA second optional argument (0-34) can specify the color scheme\n"
+	echo -ne "\t\tfor the gradient theme.\n"
     echo -ne "\t-p [THEME]\n"
 	echo -ne "\t\tChanges current and default theme (in .bashrc) to the specified theme.\n"
+	echo -ne "\t\tA second optional argument (0-34) can specify the color scheme\n"
+	echo -ne "\t\tfor the gradient theme.\n"
 	echo -ne "\t-l\n"
     echo -ne "\t\tLists all available themes.\n\n"
     echo -ne "SETUP:\n"
@@ -27,6 +32,12 @@ if [[ $# == 0 ]] || [[ "$1" == "-h" ]]; then
 	echo -ne "\n"
 elif [[ "$1" == "-c" ]]; then
 	new_theme=$2
+	if [[ ! -z $3 ]]; then
+		if [[ "$3" -gt 34 ]] || [[ "$3" -lt 0 ]]; then
+			echo "Error: gradient number should be 0-34."
+			return
+		fi
+	fi
 	# Check if new_theme matches a listed theme
 	if [[ "${theme_list[@]}" =~ "${new_theme}" ]]; then
 		# Check if function exists.
@@ -34,7 +45,7 @@ elif [[ "$1" == "-c" ]]; then
 			echo "Error: function _theme_${new_theme} not found."
 		else
 			# If theme is found, export PROMPT_COMMAND
-			export PROMPT_COMMAND='PS1="`_theme_'${new_theme}'`"'
+			export PROMPT_COMMAND='PS1=`_theme_'"${new_theme} $3"'`'
 		fi
 	else
 		# If theme not found, print error message.
@@ -42,12 +53,19 @@ elif [[ "$1" == "-c" ]]; then
 	fi
 elif [[ "$1" == "-p" ]]; then
 	new_theme=$2
+	if [[ ! -z $3 ]]; then
+		if [[ "$3" -gt 34 ]] || [[ "$3" -lt 0 ]]; then
+			echo "Error: gradient number should be 0-34."
+			return
+		fi
+	fi
+
 	if [[ "${theme_list[@]}" =~ "${new_theme}" ]]; then
 		# If .bashrc is not open, edit it.
 		if [[ -z $(lsof ${HOME}/.bashrc* 2>/dev/null) ]]; then
-			perl -i -pe "s/PS1=\`.*\`/PS1=\`_theme_$new_theme\`/" ${HOME}/.bashrc
+			perl -i -pe "s/PS1=\`.*\`/PS1=\`_theme_$new_theme $3\`/" ${HOME}/.bashrc
 			# Change current theme.
-			theme -c ${new_theme}
+			theme -c ${new_theme} $3
 		else
 			echo "Error: ${HOME}/.bashrc is currently being edited by another process."
 		fi
@@ -61,7 +79,7 @@ elif [[ "$1" == "-l" ]]; then
 		echo -ne "    ${theme_list[c]}\n"
 	done
 else
-	echo -ne "Error: try running 'theme -help'.\n"
+	echo -ne "Error: try running 'theme --help'.\n"
 fi
 
 unset theme_list new_theme

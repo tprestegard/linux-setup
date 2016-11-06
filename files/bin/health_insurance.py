@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# Imports
+import matplotlib.pyplot as plt
+import pdb
+
 # Notes:
 #	co-pays don't count towards deductible.
 #	co-pays do count towards OOPL.
@@ -72,7 +76,7 @@ class Plan:
 				visit_paid += visit.cost * self.coinsurance
 			else:
 				visit_paid += self.copay_bd[visit.visit_type]
-				if (self.deductible < (visit.cost + self.__cost)):
+				if (self.deductible <= (visit.cost + self.__cost)):
 					over_ded = (visit.cost + self.__cost) - self.deductible
 					visit_paid += (visit.cost - over_ded) + self.coinsurance*over_ded
 					self.__ded_met = True
@@ -80,10 +84,16 @@ class Plan:
 					visit_paid += visit.cost
 		
 		# Check again if OOP max is met, subtract difference if so.
-		if (not self.__oop_met and self.__cost > self.oop_max):
+		if (not self.__oop_met and self.__cost >= self.oop_max):
 			visit_paid = self.oop_max - self.__cost
 			self.__cost = self.oop_max
 			self.__oop_met = True
+
+		# Use HSA funds if available.
+		if (self.hsa and self.hsa_amount > 0):
+			hsa_funds = min(visit_paid, self.hsa_amount)
+			visit_paid -= hsa_funds
+			self.hsa_amount -= hsa_funds
 
 		# Append to visit cost/paid lists.
 		self.__vcost.append(visit.cost)
@@ -105,12 +115,43 @@ class Plan:
 		print "\tTotal annual cost:\t%.2f\n" % total_cost
 
 	def print_visit_breakdown(self):
-		for vp,vc in zip(self.__vpaid,self.__vcost):
-			print 
-		
+		tot_paid = 0
+		tot_cost = 0
+		print("Visit\tPaid ($)\tCost ($)\tTot Paid ($)\tTot Cost ($)")
+		print("--------------------------------------------------------------------")
+		for i, (vp,vc) in enumerate(zip(self.__vpaid,self.__vcost)):
+			tot_paid += vp; tot_cost += vc
+			print("%d\t%.2f\t\t%.2f\t\t%.2f\t\t%.2f" % (i+1, vp, vc, tot_paid, tot_cost))
+		print("") # newline	
+
+	def gen_plot_series(self):
+		paid = [self.premium*12]; benefits = [0]
+		for vp,vc in zip(self.__vpaid, self.__vcost):
+			paid.append(vp + paid[-1])
+			benefits.append(vc + benefits[-1])
+
+		return (paid, benefits)
+
+def plot_cost_breakdown(plan_list):
+
+	# Colors
+	col_list = ['blue','red','black','yellow']
+
+	# Set up plot figure
+	fig = plt.figure(); ax = plt.gca()
+
+	# Loop over plans
+	for i,plan in enumerate(plan_list):
+		paid, benefits = plan.gen_plot_series()
+		plt.plot(paid,benefits, linewidth=2, color=col_list[i], label=plan.name)
+	
+	plt.legend(loc='upper left', fontsize=10)
+	fig.savefig('health_insurance.png')
+
+
 # Main code --------------------------------------------------------------------
 # Set up plans
-iyc_plan = Plan(name="It's Your Choice Health Plan", deductible=217, \
+iyc_plan = Plan(name="It's Your Choice Health Plan", deductible=500, \
                 copay_bd=[15,25], copay_ad=[15,25], hsa=False, \
                 premium=219, oop_max=2500, coinsurance=0.1)
 hdhp_plan = Plan(name="It's Your Choice HDHP", deductible=3000, \
@@ -119,7 +160,7 @@ hdhp_plan = Plan(name="It's Your Choice HDHP", deductible=3000, \
                  coinsurance=0.1)
 
 # Add visits.
-for ii in range(0,20):
+for ii in range(0,60):
 	new_visit = Visit(visit_type="normal", cost=200)
 	iyc_plan.add_visit(new_visit)
 	hdhp_plan.add_visit(new_visit)
@@ -127,3 +168,10 @@ for ii in range(0,20):
 # Print results.
 iyc_plan.print_annual_cost()
 hdhp_plan.print_annual_cost()
+
+# Print detailed visit stuff.
+iyc_plan.print_visit_breakdown()
+hdhp_plan.print_visit_breakdown()
+
+# Plots
+plot_cost_breakdown([iyc_plan, hdhp_plan])

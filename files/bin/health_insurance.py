@@ -2,6 +2,9 @@
 
 # Imports
 import matplotlib.pyplot as plt
+import copy
+from scipy.stats import chi2
+import numpy as np
 import pdb
 
 # Notes:
@@ -50,11 +53,11 @@ class Plan:
 
 		# Private variables ----------------
 		# Is deductible met?
-		self.__ded_met = False
+		self._ded_met = False
 		# Is OOP maximum met?
-		self.__oop_met = False
+		self._oop_met = False
 		# total cost (make not directly modifiable?)	
-		self.__cost = 0
+		self._cost = 0
 		# Lists for tracking visit cost and amount paid.
 		self.__vcost = []
 		self.__vpaid = []
@@ -65,29 +68,28 @@ class Plan:
 	
 		# total paid for visit.
 		visit_paid = 0	
-
 		# If OOP max is met, nothing is paid.
-		if self.__oop_met:
+		if self._oop_met:
 			pass
 		else:		
 			# If deductible is met:
-			if self.__ded_met:
+			if self._ded_met:
 				visit_paid += self.copay_ad[visit.visit_type]
 				visit_paid += visit.cost * self.coinsurance
 			else:
 				visit_paid += self.copay_bd[visit.visit_type]
-				if (self.deductible <= (visit.cost + self.__cost)):
-					over_ded = (visit.cost + self.__cost) - self.deductible
+				if (self.deductible <= (visit.cost + self._cost)):
+					over_ded = (visit.cost + self._cost) - self.deductible
 					visit_paid += (visit.cost - over_ded) + self.coinsurance*over_ded
-					self.__ded_met = True
+					self._ded_met = True
 				else:
 					visit_paid += visit.cost
-		
+	
 		# Check again if OOP max is met, subtract difference if so.
-		if (not self.__oop_met and self.__cost >= self.oop_max):
-			visit_paid = self.oop_max - self.__cost
-			self.__cost = self.oop_max
-			self.__oop_met = True
+		if ((not self._oop_met) and (self._cost + visit_paid) >= self.oop_max):
+			visit_paid = self.oop_max - self._cost
+			self._cost = self.oop_max
+			self._oop_met = True
 
 		# Use HSA funds if available.
 		if (self.hsa and self.hsa_amount > 0):
@@ -100,17 +102,16 @@ class Plan:
 		self.__vpaid.append(visit_paid)
 
 		# Final stuff.
-		self.__cost += visit_paid
+		self._cost += visit_paid
 		self.__num_visits += 1
 
-
 	def print_annual_cost(self):
-		total_cost = self.__cost + self.premium*12.0
+		total_cost = self._cost + self.premium*12.0
 		
 		# Print information.
 		print "Total costs of %s:" % self.name
 		print "\tPremiums:\t\t%.2f" % (self.premium*12.0)
-		print "\tVisits (%i):\t\t%.2f" % (self.__num_visits, self.__cost)
+		print "\tVisits (%i):\t\t%.2f" % (self.__num_visits, self._cost)
 		print "\t---------------------------------"
 		print "\tTotal annual cost:\t%.2f\n" % total_cost
 
@@ -132,22 +133,47 @@ class Plan:
 
 		return (paid, benefits)
 
-def plot_cost_breakdown(plan_list):
+	def print_info(self):
+		print("Deductible met: %s" % self._ded_met)
+		print("OOP met: %s" % self._oop_met)
+		print("Self cost: %s" % str(self._cost))
+
+def plot_cost_breakdown(plan_list, fname_prefix):
 
 	# Colors
 	col_list = ['blue','red','black','yellow']
 
+	# Plot 1: benefits vs. paid -------------------------------
 	# Set up plot figure
 	fig = plt.figure(); ax = plt.gca()
 
 	# Loop over plans
 	for i,plan in enumerate(plan_list):
 		paid, benefits = plan.gen_plot_series()
-		plt.plot(paid,benefits, linewidth=2, color=col_list[i], label=plan.name)
+		plt.plot(paid, benefits, linewidth=2, color=col_list[i], label=plan.name)
+		for j,xy in enumerate(zip(paid,benefits)):
+			ann=(xy[0]-100, xy[1]+100)
+			ax.annotate('%d' % j, xy=ann, fontsize=8, color=col_list[i])
 	
+	ax.set_xlabel('Cost ($)')
+	ax.set_ylabel('Benefits ($)')
+	ax.set_title(fname_prefix)
 	plt.legend(loc='upper left', fontsize=10)
-	fig.savefig('health_insurance.png')
+	fig.savefig('%s_benefits_vs_cost.png' % fname_prefix)
+	plt.close()
 
+	# Plot 2: paid vs. visit number. --------------------------
+	fig = plt.figure(); ax = plt.gca()
+	for i,plan in enumerate(plan_list):
+		paid, benefits = plan.gen_plot_series()
+		visit_nums = range(1,len(paid)+1)
+		plt.plot(visit_nums, paid, linewidth=2, color=col_list[i], label=plan.name)
+	ax.set_xlabel('Visit number')
+	ax.set_ylabel('Cost ($)')
+	ax.set_title(fname_prefix)
+	plt.legend(loc='upper left', fontsize=10)
+	fig.savefig('%s_cost_vs_visits.png' % fname_prefix)
+	plt.close()
 
 # Main code --------------------------------------------------------------------
 # Set up plans
@@ -159,19 +185,43 @@ hdhp_plan = Plan(name="It's Your Choice HDHP", deductible=3000, \
                  hsa_amount=1500, premium=82, oop_max=5000, \
                  coinsurance=0.1)
 
+# Make copies
+iyc2 = copy.deepcopy(iyc_plan); iyc3 = copy.deepcopy(iyc_plan)
+hdhp2 = copy.deepcopy(hdhp_plan); hdhp3 = copy.deepcopy(hdhp_plan)
+
+# Model 1: many $200 visits. ----------------------------
 # Add visits.
 for ii in range(0,60):
 	new_visit = Visit(visit_type="normal", cost=200)
 	iyc_plan.add_visit(new_visit)
 	hdhp_plan.add_visit(new_visit)
 
-# Print results.
-iyc_plan.print_annual_cost()
-hdhp_plan.print_annual_cost()
-
-# Print detailed visit stuff.
-iyc_plan.print_visit_breakdown()
-hdhp_plan.print_visit_breakdown()
-
 # Plots
-plot_cost_breakdown([iyc_plan, hdhp_plan])
+plot_cost_breakdown([iyc_plan, hdhp_plan],"fixed_200")
+
+# Model 2: many visits with Gaussian mean of 200 and
+#          sigma of 200.
+for ii in range(0,60):
+	cost = np.random.normal(200,100)
+	if (cost < 100): cost = 100
+	new_visit = Visit(visit_type="normal", cost=cost)
+	iyc2.add_visit(new_visit); hdhp2.add_visit(new_visit)
+# Plots
+plot_cost_breakdown([iyc2, hdhp2], "random_200")
+
+# Model 3: trying to be most accurate.
+# Use chi2 distribution with 3 DOF.
+np.random.seed(4)
+for ii in range(0,60):
+	cost = np.random.chisquare(3,1)[0]*100
+	if (cost < 100): cost = 100
+	vtype_var = np.random.uniform(1)
+	if (vtype_var < 0.3):
+		vtype = "specialist"
+	else:
+		vtype = "normal"
+	new_visit = Visit(visit_type=vtype, cost=cost)
+	iyc3.add_visit(new_visit);
+	hdhp3.add_visit(new_visit)
+# Plots
+plot_cost_breakdown([iyc3, hdhp3], "model3")

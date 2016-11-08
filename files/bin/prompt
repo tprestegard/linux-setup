@@ -226,7 +226,7 @@ function _theme_gradient() {
 		let "lett_col += step"
 		
 		# Print letter.
-		echo -ne "$(scb ${lett_col} ${bg} ${prompt:$i:1})"
+		echo -ne $(scb ${lett_col} ${bg} "${prompt:$i:1}")
 		
 		# Determine increment or decrement for next letter.
 		if [[ "${lett_col}" -eq "${startcol}" ]]; then

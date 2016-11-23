@@ -20,7 +20,7 @@ chmod 600 files/.pypirc.encrypted
 
 # Handle encrypted files -------------------------
 # Get list of encrypted files.
-enc_files=$(ls -a ${FILE_DIR}/*${ENC_SUFFIX})
+enc_files=$(find ${FILE_DIR} -type f -name "*${ENC_SUFFIX}")
 
 # Decrypt any encrypted files.
 for file in ${enc_files}; do
@@ -47,7 +47,8 @@ done
 
 # Link files -------------------------------------
 # Get file list (excluding encrypted files).
-file_list=$(ls -A ${FILE_DIR}/ --ignore="*${ENC_SUFFIX}")
+#file_list=$(ls -A ${FILE_DIR}/ --ignore="*${ENC_SUFFIX}")
+file_list=$(find ${FILE_DIR}/ -mindepth 1 -maxdepth 1 \( -type f -o -type d \) \( ! -name "*${ENC_SUFFIX}" \) -printf "%f\n")
 
 # Loop over files.
 for file in ${file_list}; do

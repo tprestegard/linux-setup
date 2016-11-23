@@ -3,6 +3,7 @@
 
 # SSH config file (if it somehow makes it in unencrypted)
 files/config
+files/.pypirc
 
 # Store folder
 .linux-setup-store

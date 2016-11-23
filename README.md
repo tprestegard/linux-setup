@@ -10,6 +10,10 @@ Run the install script.
 
 Reverting the install.
 
+## Encrypting and decrypting files
+Encrypting: gpg2 --recipient "Tanner Prestegard" --out .pypirc.encrypted --encrypt .pypirc
+Decrypting: gpg2 --out .pypirc --decrypt .pypirc.encrypted
+
 ## Making commits and pushing to the remote repo
 Sign with GPG key:
 

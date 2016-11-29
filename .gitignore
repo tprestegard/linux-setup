@@ -1,5 +1,6 @@
 # Temp vim files
 *.swp
+files/.vim/.netrwhist
 
 # SSH config file (if it somehow makes it in unencrypted)
 files/config

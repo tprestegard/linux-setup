@@ -63,7 +63,7 @@ elif [[ "$1" == "-p" ]]; then
 	if [[ "${theme_list[@]}" =~ "${new_theme}" ]]; then
 		# If .bashrc is not open, edit it.
 		if [[ -z $(lsof ${HOME}/.bashrc* 2>/dev/null) ]]; then
-			perl -i -pe "s/PS1=\`.*\`/PS1=\`_theme_$new_theme $3\`/" ${HOME}/.bashrc
+			perl -i -pe "s/PS1=\`.*\`/PS1=\`_theme_$new_theme $3\`/" $(realpath ${HOME}/.bashrc)
 			# Change current theme.
 			theme -c ${new_theme} $3
 		else

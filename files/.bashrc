@@ -70,7 +70,7 @@ fi
 # Set up prompt.
 #source $HOME/bin/prompt
 if [[ -f "$HOME/bin/prompt" ]]; then
-	export PROMPT_COMMAND='PS1=`_theme_random_color`'
+	export PROMPT_COMMAND='PS1=`_theme_gradient `'
 else
 	# Default prompt
 	titlebar="\[\e]2;\u@\h \w\a\]"

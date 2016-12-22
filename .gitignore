@@ -2,9 +2,10 @@
 *.swp
 files/.vim/.netrwhist
 
-# SSH config file (if it somehow makes it in unencrypted)
+# Decrypted files
 files/config
 files/.pypirc
+files/.netrc
 
 # Store folder
 .linux-setup-store

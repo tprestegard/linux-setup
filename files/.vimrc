@@ -45,3 +45,6 @@ noremap <silent> <expr> <Down> ScreenMovement("<Down>")
 "noremap <silent> <expr> $ ScreenMovement("$")
 "nnoremap <silent> <Esc> <Esc>`^
 
+" highlight parts of lines beyond 79 chars in Python files only (PEP-8 standard)
+highlight OverLength ctermbg=red ctermfg=white cterm=bold guibg=#FFD9D9
+au Filetype python match OverLength /\%>79v.\+/

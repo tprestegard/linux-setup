@@ -14,7 +14,7 @@ fi
 
 # Import functions (for Ubuntu).
 # For Debian, import them in .bashrc.
-if [[ $(lsb_release -si) == "Ubuntu" ]]; then
+if [[ $(lsb_release -si) != "Debian" ]]; then
 	if [[ -r "$HOME/.functions" ]] && [[ -f "$HOME/.functions" ]]; then
 		source "$HOME/.functions"
 	fi

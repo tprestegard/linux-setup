@@ -15,6 +15,7 @@ nonhomefiles["config"]="${HOME}/.ssh"
 # Manage custom file permissions.
 chmod 600 files/config.encrypted
 chmod 600 files/.pypirc.encrypted
+chmod 600 files/.netrc.encrypted
 
 # Main code ##########################################################
 

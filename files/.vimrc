@@ -15,6 +15,10 @@ set expandtab
 "set autoindent
 "set smarttab
 
+" change tabs for yaml and eyaml files
+au Filetype yaml set ts=2 sts=2 sw=2 et
+au BufRead,BufNewFile *.eyaml set maxmempattern=2000 filetype=yaml
+
 " set line numbers
 set number
 

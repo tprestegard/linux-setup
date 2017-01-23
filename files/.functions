@@ -2,7 +2,8 @@
 
 # Functions -------------------
 # UWM VPN
-oc() { sudo openconnect -u prestega --juniper vpn.uwm.edu -b --no-cert-check; }
+#oc() { sudo openconnect -u prestega --juniper vpn.uwm.edu -b --no-cert-check; }
+oc() { sudo /usr/sbin/openconnect -u prestega --juniper vpn.uwm.edu --script /etc/vpnc/vpnc-script; }
 export -f oc
 
 # SSH functions ---------------

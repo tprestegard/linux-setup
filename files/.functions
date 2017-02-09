@@ -57,7 +57,7 @@ lva-test() { ssh -YA lvalert-test.cgca.uwm.edu; }
 ligo-rm() { ssh -YA ligo-rm.phys.uwm.edu; }
 dashboard() { ssh -YA dashboard.cgca.uwm.edu; }
 cgca() { ssh -YA $1.cgca.uwm.edu; } # generic function for any cgca.uwm.edu machine
-export -f gdb gdb-test sdb lva lva-test ligo-rm dashboard cgca
+export -f gdb sdb lva lva-test ligo-rm dashboard cgca
 # NEMO computers
 uwmpcdev() { ligo_setup; gsissh -YA pcdev$1.phys.uwm.edu; }
 export -f uwmpcdev

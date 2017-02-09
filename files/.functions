@@ -37,9 +37,20 @@ emfollow() { ligo_setup; gsissh -YA emfollow.ligo.caltech.edu; }
 export -f ligo_setup pcdev pcgrid atlas titan lho llo uwm sugar emfollow
 
 # UWM computers
-gdb() { ssh -YA gracedb.cgca.uwm.edu; }
-gdb-test() { ssh -YA gracedb-test.cgca.uwm.edu; }
-gdb-dev() { ssh -YA gracedb-dev.ligo.uwm.edu; }
+gdb () {
+    host="gracedb"
+    if [[ "$#" -eq 0 ]]; then
+        host+=".cgca"
+    elif [[ "$#" -eq 1 ]]; then
+        host+="-$1.cgca"
+    elif [[ "$#" -eq 2 ]]; then
+        host+="-$1.$2"
+    else
+        echo "ERROR: takes 0, 1, or 2 arguments."
+        return
+    fi
+    ssh -YA ${host}.uwm.edu;
+}
 sdb() { ssh -YA simdb.cgca.uwm.edu; }
 lva() { ssh -YA lvalert.cgca.uwm.edu; }
 lva-test() { ssh -YA lvalert-test.cgca.uwm.edu; }

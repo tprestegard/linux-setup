@@ -95,6 +95,10 @@ fi
 # sudo/su environment aliases
 alias sudoE='sudo -E '
 alias sup='su -p'
+# tmux aliases
+alias tn='tmux new -s'
+alias ta='tmux attach -t'
+alias tl='tmux ls'
 
 # Import functions (Debian)
 if [[ $(lsb_release -si) == "Debian" ]]; then

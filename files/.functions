@@ -49,22 +49,18 @@ gdb () {
         echo "ERROR: takes 0, 1, or 2 arguments."
         return
     fi
-    ssh -YA ${host}.uwm.edu;
+    gsissh -YA ${host}.uwm.edu;
 }
-sdb() { ssh -YA simdb.cgca.uwm.edu; }
-lva() { ssh -YA lvalert.cgca.uwm.edu; }
-lva-test() { ssh -YA lvalert-test.cgca.uwm.edu; }
-ligo-rm() { ssh -YA ligo-rm.phys.uwm.edu; }
-dashboard() { ssh -YA dashboard.cgca.uwm.edu; }
-cgca() { ssh -YA $1.cgca.uwm.edu; } # generic function for any cgca.uwm.edu machine
+sdb() { gsissh -YA simdb.cgca.uwm.edu; }
+lva() { gsissh -YA lvalert.cgca.uwm.edu; }
+lva-test() { gsissh -YA lvalert-test.cgca.uwm.edu; }
+ligo-rm() { gsissh -YA ligo-rm.phys.uwm.edu; }
+dashboard() { gsissh -YA dashboard.cgca.uwm.edu; }
+cgca() { gsissh -YA $1.cgca.uwm.edu; } # generic function for any cgca.uwm.edu machine
 export -f gdb sdb lva lva-test ligo-rm dashboard cgca
 # NEMO computers
 uwmpcdev() { ligo_setup; gsissh -YA pcdev$1.phys.uwm.edu; }
 export -f uwmpcdev
-# Sandboxes
-webhook() { ssh -YA webhook-test.cgca.uwm.edu; }
-eah() { ssh -YA eah-d8-dev.cgca.uwm.edu; }
-export -f webhook eah
 
 # Other useful functions -------------------------------------------------
 # make a directory and go to it.

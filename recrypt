@@ -1,0 +1,31 @@
+#! /usr/bin/env bash
+
+# Script for recrypting unencrypted files before
+# committing and pushing changes to the repository.
+#
+# Usage: ./recrypt [recipient]
+#        recipient is the user who you want to encrypt
+#        the files for (probably yourself)
+
+# Handle arguments
+if [[ "$#" -ne 1 ]]; then
+    echo "Illegal number of parameters (1 required)" 
+    exit
+else
+    user=$1
+fi
+
+# Parameters.
+FILE_DIR="files"
+ENC_SUFFIX=".encrypted"
+
+# Get list of encrypted files.
+enc_files=$(find ${FILE_DIR} -type f -name "*${ENC_SUFFIX}")
+
+# Recrypt these files.
+for file in ${enc_files}; do
+    unenc_file=${file%${ENC_SUFFIX}}
+    cmd="gpg2 --recipient \"${user}\" --out ${file} --encrypt ${unenc_file}"
+    eval ${cmd}
+done
+

@@ -12,16 +12,14 @@ STORE_DIR=".linux-setup-store"
 declare -A nonhomefiles
 nonhomefiles["config"]="${HOME}/.ssh"
 
-# Manage custom file permissions.
-chmod 600 files/config.encrypted
-chmod 600 files/.pypirc.encrypted
-chmod 600 files/.netrc.encrypted
-
 # Main code ##########################################################
 
 # Handle encrypted files -------------------------
 # Get list of encrypted files.
 enc_files=$(find ${FILE_DIR} -type f -name "*${ENC_SUFFIX}")
+
+# Change their permissions to 600
+chmod 600 ${enc_files}
 
 # Decrypt any encrypted files.
 for file in ${enc_files}; do

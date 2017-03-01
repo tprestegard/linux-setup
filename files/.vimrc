@@ -15,8 +15,10 @@ set expandtab
 "set autoindent
 "set smarttab
 
-" change tabs for yaml and eyaml files
-au Filetype yaml set ts=2 sts=2 sw=2 et
+" change tabs for yaml and .pp (Puppet) files
+au Filetype yaml,puppet set ts=2 sts=2 sw=2 et
+au BufRead,BufNewFile *.pp set filetype=puppet
+" same for eyaml files, plus use yaml syntax highlighting
 au BufRead,BufNewFile *.eyaml set maxmempattern=2000 filetype=yaml
 
 " set line numbers

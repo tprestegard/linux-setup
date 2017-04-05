@@ -38,20 +38,42 @@ export -f ligo_setup pcdev pcgrid atlas titan lho llo uwm sugar emfollow
 
 # UWM computers
 gdb () {
-    host="gracedb"
-    if [[ "$#" -eq 0 ]]; then
-        host+=".cgca"
-    elif [[ "$#" -eq 1 ]]; then
-        host+="-$1.cgca"
-    elif [[ "$#" -eq 2 ]]; then
-        host+="-$1.$2"
-    else
-        echo "ERROR: takes 0, 1, or 2 arguments."
+    
+    # check grid proxy
+    grid-proxy-info -e > /dev/null 2>&1
+    if [[ "$?" -ne 0 ]]; then
+        echo "ERROR: no grid proxy. Run ligo-proxy-init."
         return
     fi
-    gsissh -YA ${host}.uwm.edu;
+
+    # Defaults
+    local GRACEDB_USER="gracedb"
+    local DOMAIN="ligo.org"
+    local HELPTEXT='USAGE:\n\tgdb [suffix] [-g]'
+
+    # Set up user
+    local user=""
+    if [[ "$@" =~ "-g" ]]; then
+        user=${GRACEDB_USER}
+    else
+        # Hacky method for getting username from grid cert
+        user=$(grid-proxy-info -subject | awk '{print $3;}' | awk -F'@' '{print $1;}')
+    fi
+
+    # Set up hostname
+    local host="gracedb"
+    if ([[ "$#" -gt 1 ]] && [[ "$1" == "-g" ]]) || [[ "$#" -gt 2 ]]; then
+        echo -e ${HELPTEXT}
+        return
+    elif ([[ ! -z ${user} ]] && [[ "$#" -eq 2 ]]) || 
+         ([[ -z ${user} ]] && [[ "$#" -eq 1 ]]); then
+        host+="-$1"
+    fi
+    host+=".${DOMAIN}"
+
+    gsissh -YA ${user}@${host}
 }
-sdb() { gsissh -YA simdb.cgca.uwm.edu; }
+sdb() { myvar="OK"; gsissh -YA simdb.cgca.uwm.edu; }
 lva() { gsissh -YA lvalert.cgca.uwm.edu; }
 lva-test() { gsissh -YA lvalert-test.cgca.uwm.edu; }
 ligo-rm() { gsissh -YA ligo-rm.phys.uwm.edu; }
@@ -84,6 +106,7 @@ cdu() {
         return
     fi
 
+    local NUMLVL
     if [[ "$#" -eq 0 ]]; then
         NUMLVL=1
     else
@@ -95,7 +118,7 @@ cdu() {
     fi
 
     # Check depth
-    CUR_DEPTH=$(pwd | grep -o "/" | wc -l)
+    local CUR_DEPTH=$(pwd | grep -o "/" | wc -l)
     if [[ "${CUR_DEPTH}" -lt "${NUMLVL}" ]]; then
         echo -n "WARNING: current filesystem depth is ${CUR_DEPTH}, less than "
         echo "requested level change. Going up ${CUR_DEPTH} directories."
@@ -103,7 +126,7 @@ cdu() {
     fi
 
     # Build command
-    CMD="cd "
+    local CMD="cd "
     while [[ ${NUMLVL} > 0 ]]; do
         CMD=${CMD}"../"
         let NUMLVL=${NUMLVL}-1

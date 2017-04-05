@@ -1,7 +1,10 @@
 #! /usr/bin/env bash
-
+#
 # Script for recrypting unencrypted files before
 # committing and pushing changes to the repository.
+# Note that this will cause a new version of the
+# file to be generated, even if there are no
+# differences.
 #
 # Usage: ./recrypt [recipient]
 #        recipient is the user who you want to encrypt

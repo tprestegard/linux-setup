@@ -13,7 +13,7 @@ parser.add_argument("-D", "--down_payment", type=float, default=0,
 parser.add_argument("-I", "--interest_rate", type=float,
                     help="Annual interest rate", required=True)
 parser.add_argument("-L", "--loan_term", type=int, default=30,
-                    help="Loan period (yrs)", required=True)
+                    help="Loan period (yrs)", required=False)
 parser.add_argument("-C", "--check", action='store_true',
                     help="Check monthly payment computation.")
 

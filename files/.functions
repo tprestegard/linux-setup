@@ -46,6 +46,12 @@ gdb () {
         return
     fi
 
+    # if more than 2 args and 2nd is not -g, fail
+    if [[ "$#" -eq 2 ]] && [[ "$2" != "-g" ]]; then
+        echo "ERROR: 2nd argument should be '-g', not be '$2'"
+        return
+    fi
+
     # Defaults
     local GRACEDB_USER="gracedb"
     local DOMAIN="ligo.org"
@@ -53,11 +59,13 @@ gdb () {
 
     # Set up user
     local user=""
+    local gdb_bool=0
     if [[ "$@" =~ "-g" ]]; then
         user=${GRACEDB_USER}
+        gdb_bool=1
     else
         # Hacky method for getting username from grid cert
-        user=$(grid-proxy-info -subject | awk '{print $3;}' | awk -F'@' '{print $1;}')
+        user=$(grid-proxy-info -s | awk '{print $3}' | awk -F'@' '{print $1}')
     fi
 
     # Set up hostname
@@ -65,8 +73,8 @@ gdb () {
     if ([[ "$#" -gt 1 ]] && [[ "$1" == "-g" ]]) || [[ "$#" -gt 2 ]]; then
         echo -e ${HELPTEXT}
         return
-    elif ([[ ! -z ${user} ]] && [[ "$#" -eq 2 ]]) || 
-         ([[ -z ${user} ]] && [[ "$#" -eq 1 ]]); then
+    elif ([[ "${gdb_bool}" -eq 1 ]] && [[ "$#" -eq 2 ]]) || 
+         ([[ "${gdb_bool}" -eq 0 ]] && [[ "$#" -eq 1 ]]); then
         host+="-$1"
     fi
     host+=".${DOMAIN}"

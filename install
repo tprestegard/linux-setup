@@ -4,7 +4,6 @@
 
 # Parameters.
 FILE_DIR="files"
-ENC_SUFFIX=".encrypted"
 STORE_DIR=".linux-setup-store"
 
 # Files installed in a directory other than ${HOME}.
@@ -14,40 +13,9 @@ nonhomefiles["config"]="${HOME}/.ssh"
 
 # Main code ##########################################################
 
-# Handle encrypted files -------------------------
-# Get list of encrypted files.
-enc_files=$(find ${FILE_DIR} -type f -name "*${ENC_SUFFIX}")
-
-# Change their permissions to 600
-chmod 600 ${enc_files}
-
-# Decrypt any encrypted files.
-for file in ${enc_files}; do
-	# Build output name for decrypted file.
-	out_file=${FILE_DIR}/$(basename --suffix=${ENC_SUFFIX} ${file})
-
-	# Decrypt file (if it hasn't already been decrypted).
-	echo -n "Decrypting ${file} to ${out_file}."
-	overwrite="y"
-	if [[ -r ${out_file} ]] && [[ -f ${out_file} ]]; then
-		echo -n "..decrypted file already exists. Overwrite (y/n)? "
-		read overwrite
-	fi
-
-	if [[ "${overwrite}" =~ ^y|Y ]]; then
-		echo -e "\nYou may need to enter your GPG key passphrase."
-		# Decrypt file.
-		gpg2 --yes --out ${out_file} --decrypt ${file}
-		# Fix permissions (assumes encrypted file has correct permissions)
-		chmod --reference=${file} ${out_file}
-		
-	fi
-done
-
 # Link files -------------------------------------
-# Get file list (excluding encrypted files).
-#file_list=$(ls -A ${FILE_DIR}/ --ignore="*${ENC_SUFFIX}")
-file_list=$(find ${FILE_DIR}/ -mindepth 1 -maxdepth 1 \( -type f -o -type d \) \( ! -name "*${ENC_SUFFIX}" \) -printf "%f\n")
+# Get file list
+file_list=$(find ${FILE_DIR}/ -mindepth 1 -maxdepth 1 \( -type f -o -type d \) -printf "%f\n")
 
 # Loop over files.
 for file in ${file_list}; do

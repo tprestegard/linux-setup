@@ -3,9 +3,10 @@
 files/.vim/.netrwhist
 
 # Decrypted files
-files/config
-files/.pypirc
-files/.netrc
+# don't need this anymore since we are using git-crypt
+#files/config
+#files/.pypirc
+#files/.netrc
 
 # Store folder
 .linux-setup-store

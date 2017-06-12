@@ -1,22 +1,14 @@
 # Files and documentation for setting up Linux on my personal computers
 
 ## Getting the repository
-Clone the repository using SSH: git clone git@github.com:tprestegard/linux-setup.git
+Clone the repository using SSH:
+`git clone git@github.com:tprestegard/linux-setup.git`
 
-## Distributing the files in the repository
-Run the install script.
- * Description of install script.
- * Handling of currently existing files.
+## Decrypting files
+`git-crypt unlock`
 
-Reverting the install.
-
-## Encrypting and decrypting files
-Encrypting: gpg2 --recipient "Tanner Prestegard" --out .pypirc.encrypted --encrypt .pypirc
-
-Decrypting: gpg2 --out .pypirc --decrypt .pypirc.encrypted
-
-## Making commits and pushing to the remote repo
-Sign with GPG key:
+## Run install script
+`./install`
 
 ## Other stuff to set up
 

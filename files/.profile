@@ -7,27 +7,29 @@
 # the default umask is set in /etc/profile; for setting the umask
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
-# set PATH so it includes user's private bin if it exists
-if [[ -d "$HOME/bin" ]] ; then
-    export PATH="$HOME/bin:$PATH"
-fi
 
-# Import functions (for Ubuntu).
-# For Debian, import them in .bashrc.
+# Import functions and set $TERM (for Ubuntu).
+# For Debian, we have to do this in .bashrc.
 if [[ $(lsb_release -si) != "Debian" ]]; then
+    # set PATH so it includes user's private bin if it exists
+    if [[ -d "$HOME/bin" ]] ; then
+        export PATH="$HOME/bin:$PATH"
+    fi
 	if [[ -r "$HOME/.functions" ]] && [[ -f "$HOME/.functions" ]]; then
 		source "$HOME/.functions"
 	fi
-fi
-
-# Set TERM to be xterm-256color
-if [[ "$TERM" == "xterm" ]]; then
-    export TERM=xterm-256color
-fi
-
-# Custom prompt
-if [[ -f "$HOME/bin/prompt" ]]; then
-	source $HOME/bin/prompt
+    # Set TERM to be xterm-256color
+    if [[ "$TERM" == "xterm" ]]; then
+        export TERM=xterm-256color
+    fi
+    # Custom prompt
+    if [[ -f "$HOME/bin/prompt" ]]; then
+	    source $HOME/bin/prompt
+    fi
+    # Export editor
+    if [[ ! -z $(which vim) ]]; then
+	    export EDITOR=$(which vim)
+    fi
 fi
 
 # Source .bashrc if running bash
@@ -38,7 +40,3 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-# Export editor
-if [[ ! -z $(which vim) ]]; then
-	export EDITOR=$(which vim)
-fi

@@ -67,6 +67,28 @@ fi
 
 # My stuff --------------------------------------------------
 
+# Debian: do a bunch of stuff which should be done in
+# .profile but doesn't work.
+if [[ $(lsb_release -si) == "Debian" ]]; then
+    # set PATH so it includes user's private bin if it exists
+    if [[ -d "$HOME/bin" ]] ; then
+        export PATH="$HOME/bin:$PATH"
+    fi
+	if [[ -r "$HOME/.functions" ]] && [[ -f "$HOME/.functions" ]]; then
+		source "$HOME/.functions"
+	fi
+    if [[ "$TERM" == "xterm" ]]; then
+        export TERM="xterm-256color"
+    fi
+    if [[ -f "$HOME/bin/prompt" ]]; then
+        source $HOME/bin/prompt
+    fi
+    # Export editor
+    if [[ ! -z $(which vim) ]]; then
+        export EDITOR=$(which vim)
+    fi
+fi
+
 # Set up prompt.
 #source $HOME/bin/prompt
 if [[ -f "$HOME/bin/prompt" ]]; then
@@ -100,10 +122,4 @@ alias tn='tmux new -s'
 alias ta='tmux attach -t'
 alias tl='tmux ls'
 
-# Import functions (Debian)
-if [[ $(lsb_release -si) == "Debian" ]]; then
-	if [[ -r "$HOME/.functions" ]] && [[ -f "$HOME/.functions" ]]; then
-		source "$HOME/.functions"
-	fi
-fi
 

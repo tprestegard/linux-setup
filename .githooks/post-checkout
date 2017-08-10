@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+PROTECTED_FILES=( "files/config" "files/.pypirc" "files/.netrc")
+
+for FILE in "${PROTECTED_FILES[@]}"
+do
+    if [[ $(stat -c %a $FILE) -ne 600 ]]; then
+        CMD="chmod 600 $FILE"
+        echo $CMD
+        eval $CMD 
+    fi
+done

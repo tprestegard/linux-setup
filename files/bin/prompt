@@ -3,9 +3,9 @@
 
 # function for adding virtualenv info to prompt
 add_venv () {
-	if [[ ! -z ${VIRTUAL_ENV} ]]; then
-		echo $1$(basename ${VIRTUAL_ENV})$2
-	fi
+    if [[ ! -z ${VIRTUAL_ENV} ]]; then
+        echo $1$(basename ${VIRTUAL_ENV})$2
+    fi
 }
 export -f add_venv
 
@@ -35,79 +35,79 @@ export _theme_titlebar
 
 # THEME FUNCTION
 function _theme_blue_steel () {
-	# Colors
-	BLUE="0;34"; L_BLUE="1;34"; CYAN="0;36"; WHITE="1;37"
+    # Colors
+    BLUE="0;34"; L_BLUE="1;34"; CYAN="0;36"; WHITE="1;37"
 
-	# Variable which calculates width.
-	p_width=0
+    # Variable which calculates width.
+    p_width=0
 
-	# Components
-	ltcorner="\xE2\x94\x8C"; brcorner="\xE2\x94\x94"
-	lbrack="\xE2\x9F\xAA"; rbrack="\xE2\x9F\xAB"
-	line="\xE2\x94\x80"
+    # Components
+    ltcorner="\xE2\x94\x8C"; brcorner="\xE2\x94\x94"
+    lbrack="\xE2\x9F\xAA"; rbrack="\xE2\x9F\xAB"
+    line="\xE2\x94\x80"
 
-	# Useful combinations
-	line2="${line}${line}"
-	color5=$(color ${CYAN} ${line2})$(color ${BLUE} ${line2})
-	color5+=$(color ${L_BLUE} ${line2})$(color ${WHITE} ${line2})
-	color5+=$(color ${L_BLUE} ${line2})
-	# Length of color5: 5.
+    # Useful combinations
+    line2="${line}${line}"
+    color5=$(color ${CYAN} ${line2})$(color ${BLUE} ${line2})
+    color5+=$(color ${L_BLUE} ${line2})$(color ${WHITE} ${line2})
+    color5+=$(color ${L_BLUE} ${line2})
+    # Length of color5: 5.
 
-	# Before name
-	before_name=$(color ${WHITE} ${ltcorner}${line})$(color ${L_BLUE} ${line2})
-	before_name+=$(color ${BLUE} ${line2})$(color ${CYAN} ${line2})
-	# length = 2 + 3*${#line2}
-	p_width=$((p_width + 8))
+    # Before name
+    before_name=$(color ${WHITE} ${ltcorner}${line})$(color ${L_BLUE} ${line2})
+    before_name+=$(color ${BLUE} ${line2})$(color ${CYAN} ${line2})
+    # length = 2 + 3*${#line2}
+    p_width=$((p_width + 8))
 
-	# Name
-	user=$(whoami); host=$(hostname)
-	name=$(color ${BLUE} ${user})$(color ${L_BLUE} '@')$(color ${BLUE} ${host})
-	nameblock=$(color ${L_BLUE} ${lbrack})${name}$(color ${L_BLUE} ${rbrack})
-	# length = 3 + ${#user} + ${#host}
-	p_width=$((p_width + 3 + ${#user} + ${#host}))
+    # Name
+    user=$(whoami); host=$(hostname)
+    name=$(color ${BLUE} ${user})$(color ${L_BLUE} '@')$(color ${BLUE} ${host})
+    nameblock=$(color ${L_BLUE} ${lbrack})${name}$(color ${L_BLUE} ${rbrack})
+    # length = 3 + ${#user} + ${#host}
+    p_width=$((p_width + 3 + ${#user} + ${#host}))
 
-	# After name - use ${color5}
-	p_width=$((p_width + 10))
+    # After name - use ${color5}
+    p_width=$((p_width + 10))
 
-	# Time block
-	time=$(get_time '%H:%M:%S')
-	timeblock=$(color ${L_BLUE} '[')$(color ${BLUE} "${time}")
-	timeblock+=$(color ${L_BLUE} ']')
-	# length = 2 + ${#time}
-	p_width=$((p_width + 2 + ${#time}))
+    # Time block
+    time=$(get_time '%H:%M:%S')
+    timeblock=$(color ${L_BLUE} '[')$(color ${BLUE} "${time}")
+    timeblock+=$(color ${L_BLUE} ']')
+    # length = 2 + ${#time}
+    p_width=$((p_width + 2 + ${#time}))
 
-	# After time - use ${color5}
-	p_width=$((p_width + 10))
+    # After time - use ${color5}
+    p_width=$((p_width + 10))
 
-	# CPU percentage block.
-	if [[ -z ${VIRTUAL_ENV} ]]; then
-		cpu=$(ps aux | awk 'NR > 0 { s += $3 }; END {printf("%3.1f%%",s)}')
-		cpublock=$(color ${L_BLUE} '[')$(color ${BLUE} ${cpu})$(color ${L_BLUE} ']')
-		# length = ${#cpu}
-		p_width=$((p_width + ${#cpu} + 2))
-	else
-		cpublock=$(add_venv '[' ']')
-		p_width=$((p_width + ${#cpublock}))
-	fi
+    # CPU percentage block.
+    if [[ -z ${VIRTUAL_ENV} ]]; then
+        cpu=$(ps aux | awk 'NR > 0 { s += $3 }; END {printf("%3.1f%%",s)}')
+        cpublock=$(color ${L_BLUE} '[')$(color ${BLUE} ${cpu})$(color ${L_BLUE} ']')
+        # length = ${#cpu}
+        p_width=$((p_width + ${#cpu} + 2))
+    else
+        cpublock=$(add_venv '[' ']')
+        p_width=$((p_width + ${#cpublock}))
+    fi
 
-	# After CPU - use ${color5}
-	p_width=$((p_width + 10))
+    # After CPU - use ${color5}
+    p_width=$((p_width + 10))
 
-	# Rest of line.
-	ncol=$((COLUMNS - p_width))
-	lineend=""
-	for (( c=1; c<=${ncol}; c++ )); do
-		lineend+=$(color ${BLUE} ${line})
-	done
+    # Rest of line.
+    ncol=$((COLUMNS - p_width))
+    lineend=""
+    for (( c=1; c<=${ncol}; c++ )); do
+        lineend+=$(color ${BLUE} ${line})
+    done
 
-	# Second line.
-	second_line=$(color ${L_BLUE} ${brcorner}${line})$(color ${BLUE} ${line2})
-	second_line+=$(color ${CYAN} ${line2})$(color ${L_BLUE} '>')' '
-	
-	# Full prompt
-	full=${_theme_titlebar}${before_name}${nameblock}${color5}${timeblock}
-	full+=${color5}${cpublock}${color5}${lineend}'\n'${second_line}
-	echo -ne "${full}"
+    # Second line.
+    second_line=$(color ${L_BLUE} ${brcorner}${line})$(color ${BLUE} ${line2})
+    second_line+=$(color ${CYAN} ${line2})$(color ${L_BLUE} '>')' '
+    
+    # Full prompt
+    full=${_theme_titlebar}${before_name}${nameblock}${color5}${timeblock}
+    full+=${color5}${cpublock}${color5}${lineend}'\n'${second_line}
+    echo -ne "${full}"
 
 }
 export -f _theme_blue_steel
@@ -115,14 +115,14 @@ export -f _theme_blue_steel
 
 #----THEME X---------------------------------------------------------------
 function _theme_theme_x () {
-	# Colors.
-	GRAY="1;30"; WHITE="1;37"; PURPLE="0;35"
+    # Colors.
+    GRAY="1;30"; WHITE="1;37"; PURPLE="0;35"
 
-	# Setup.
-	full=$(color ${GRAY} '[')$(color ${WHITE} '\u')$(color ${PURPLE} '@')
-	full+=$(color ${WHITE} '\h')$(color ${GRAY} ']')$(color ${WHITE} '$')' '
+    # Setup.
+    full=$(color ${GRAY} '[')$(color ${WHITE} '\u')$(color ${PURPLE} '@')
+    full+=$(color ${WHITE} '\h')$(color ${GRAY} ']')$(color ${WHITE} '$')' '
 
-	echo -ne "${_theme_titlebar}$(add_venv '(' ')')${full}"
+    echo -ne "${_theme_titlebar}$(add_venv '(' ')')${full}"
 }
 export -f _theme_theme_x
 #----END OF THEME X--------------------------------------------------------
@@ -131,29 +131,29 @@ export -f _theme_theme_x
 # requires xterm-256color
 # special colors
 function _theme_distinguished() {
-	_dist_bg=234
-	_dist_name=$(scb 229 ${_dist_bg} '\u')
-	_dist_at=$(scb 256 ${_dist_bg} '@')
-	_dist_host=$(scb 67 ${_dist_bg} '\h')
-	_dist_col=$(scb 256 ${_dist_bg} ':')
-	_dist_lb=$(scb 242 ${_dist_bg} '[')
-	_dist_rb=$(scb 242 ${_dist_bg} ']')
-	_dist_path=${_dist_lb}$(scb 166 ${_dist_bg} '\w')${_dist_rb}
-	_dist_end=$(scb 36 ${_dist_bg} '$')
+    _dist_bg=234
+    _dist_name=$(scb 229 ${_dist_bg} '\u')
+    _dist_at=$(scb 256 ${_dist_bg} '@')
+    _dist_host=$(scb 67 ${_dist_bg} '\h')
+    _dist_col=$(scb 256 ${_dist_bg} ':')
+    _dist_lb=$(scb 242 ${_dist_bg} '[')
+    _dist_rb=$(scb 242 ${_dist_bg} ']')
+    _dist_path=${_dist_lb}$(scb 166 ${_dist_bg} '\w')${_dist_rb}
+    _dist_end=$(scb 36 ${_dist_bg} '$')
 
-	echo -ne "${_theme_titlebar}$(sc 147 16 $(add_venv '[' ']'))"
-	echo -ne "${_dist_name}${_dist_at}${_dist_host}"
-	echo -ne "${_dist_col}${_dist_path}${_dist_end} "
+    echo -ne "${_theme_titlebar}$(sc 147 16 $(add_venv '[' ']'))"
+    echo -ne "${_dist_name}${_dist_at}${_dist_host}"
+    echo -ne "${_dist_col}${_dist_path}${_dist_end} "
 }
 export -f _theme_distinguished
 #----END OF DISTINGUISHED THEME--------------------------------------------
 
 #----RANDOM COLOR THEME ---------------------------------------------------
 function _theme_random_color() {
-	#color=$(($RANDOM % 7 + 31)) # set 31 to 30 for dark on light
-	color256=$(($RANDOM % 215 + 17)) # 17-231 (no black since bg is black)
-	echo -ne ${_theme_titlebar}$(add_venv '(' ')')$(scb ${color256} 16 '\u@\h:[\w]$')" "
-	# Note: set 1 to 0 for dark on light}
+    #color=$(($RANDOM % 7 + 31)) # set 31 to 30 for dark on light
+    color256=$(($RANDOM % 215 + 17)) # 17-231 (no black since bg is black)
+    echo -ne ${_theme_titlebar}$(add_venv '(' ')')$(scb ${color256} 16 '\u@\h:[\w]$')" "
+    # Note: set 1 to 0 for dark on light}
 }
 export -f _theme_random_color
 #----END OF RANDOM COLOR --------------------------------------------------
@@ -161,28 +161,28 @@ export -f _theme_random_color
 #----RANDOM COLOR XTREME THEME --------------------------------------------
 function _theme_random_color_xtreme() {
 
-	# Random colors
-	#col_range="7 + 31"
-	col_range="215 + 17" # 17-231
-	color1=$(($RANDOM % ${col_range})) 
-	color2=$(($RANDOM % ${col_range})) 
-	color3=$(($RANDOM % ${col_range})) 
-	color4=$(($RANDOM % ${col_range})) 
-	color5=$(($RANDOM % ${col_range})) 
-	color6=$(($RANDOM % ${col_range})) 
-	color7=$(($RANDOM % ${col_range})) 
-	color8=$(($RANDOM % ${col_range})) 
-	# 17-255 (no black since bg is black)
-	
-	# Background color
-	rcx_bg=16
+    # Random colors
+    #col_range="7 + 31"
+    col_range="215 + 17" # 17-231
+    color1=$(($RANDOM % ${col_range})) 
+    color2=$(($RANDOM % ${col_range})) 
+    color3=$(($RANDOM % ${col_range})) 
+    color4=$(($RANDOM % ${col_range})) 
+    color5=$(($RANDOM % ${col_range})) 
+    color6=$(($RANDOM % ${col_range})) 
+    color7=$(($RANDOM % ${col_range})) 
+    color8=$(($RANDOM % ${col_range})) 
+    # 17-255 (no black since bg is black)
+    
+    # Background color
+    rcx_bg=16
 
-	# Output
-	echo -ne "${_theme_titlebar}$(add_venv '(' ')')"
-	echo -ne "$(scb ${color1} ${rcx_bg} '\u')$(scb ${color2} ${rcx_bg} '@')"
-	echo -ne "$(scb ${color3} ${rcx_bg} '\h')$(scb ${color4} ${rcx_bg} ':')"
-	echo -ne "$(scb ${color5} ${rcx_bg} '[')$(scb ${color6} ${rcx_bg} '\w')"
-	echo -ne "$(scb ${color7} ${rcx_bg} ']')$(scb ${color8} ${rcx_bg} '$') "
+    # Output
+    echo -ne "${_theme_titlebar}$(add_venv '(' ')')"
+    echo -ne "$(scb ${color1} ${rcx_bg} '\u')$(scb ${color2} ${rcx_bg} '@')"
+    echo -ne "$(scb ${color3} ${rcx_bg} '\h')$(scb ${color4} ${rcx_bg} ':')"
+    echo -ne "$(scb ${color5} ${rcx_bg} '[')$(scb ${color6} ${rcx_bg} '\w')"
+    echo -ne "$(scb ${color7} ${rcx_bg} ']')$(scb ${color8} ${rcx_bg} '$') "
 }
 export -f _theme_random_color_xtreme
 #----END OF RANDOM COLOR XTREME -------------------------------------------
@@ -195,49 +195,49 @@ export -f _theme_random_color_xtreme
 # FIX: make it so the background increments by one each time.
 # Should it be foreground or background? Background might be too distracting...
 function _theme_gradient() {
-	color_array=(17 18 19 20 21 52 53 54 55 56 57 88 89 90 91 92 93)
-	color_array+=(124 125 126 127 128 129 160 161 162 163 164 165)
-	color_array+=(196 197 198 199 200 201)
+    color_array=(17 18 19 20 21 52 53 54 55 56 57 88 89 90 91 92 93)
+    color_array+=(124 125 126 127 128 129 160 161 162 163 164 165)
+    color_array+=(196 197 198 199 200 201)
 
-	# Background color.
-	bg=16
+    # Background color.
+    bg=16
 
-	# Can pass argument to pick theme start color.
-	# Otherwise, it's randomized.
-	if [[ "$#" -eq 1 ]]; then
-		startcol=${color_array[$1]}
-	else
-		startnum=$(($RANDOM % ${#color_array[@]}))
-		startcol=${color_array[${startnum}]}
-	fi
+    # Can pass argument to pick theme start color.
+    # Otherwise, it's randomized.
+    if [[ "$#" -eq 1 ]]; then
+        startcol=${color_array[$1]}
+    else
+        startnum=$(($RANDOM % ${#color_array[@]}))
+        startcol=${color_array[${startnum}]}
+    fi
 
-	# Get full prompt.
-	prompt="$(whoami)@$(hostname):[$(dirs)]$"
+    # Get full prompt.
+    prompt="$(whoami)@$(hostname):[$(dirs)]$"
 
-	# Output
-	#echo -ne "${_theme_titlebar}$(add_venv '\xE2\x9F\xAA' '\xE2\x9F\xAB')"
-	echo -ne "${_theme_titlebar}$(add_venv '{' '}')"
+    # Output
+    #echo -ne "${_theme_titlebar}$(add_venv '\xE2\x9F\xAA' '\xE2\x9F\xAB')"
+    echo -ne "${_theme_titlebar}$(add_venv '{' '}')"
 
-	# Loop over colors
-	lett_col=${startcol}
-	step=0
-	for (( i=0; i<${#prompt}; i++ )); do
-		# Determine letter color. 
-		let "lett_col += step"
-		
-		# Print letter.
-		echo -ne $(scb ${lett_col} ${bg} "${prompt:$i:1}")
-		
-		# Determine increment or decrement for next letter.
-		if [[ "${lett_col}" -eq "${startcol}" ]]; then
-			step=6
-		elif [[ "${lett_col}" -eq $((${startcol}+30)) ]]; then
-			step=-6
-		fi
+    # Loop over colors
+    lett_col=${startcol}
+    step=0
+    for (( i=0; i<${#prompt}; i++ )); do
+        # Determine letter color. 
+        let "lett_col += step"
+        
+        # Print letter.
+        echo -ne $(scb ${lett_col} ${bg} "${prompt:$i:1}")
+        
+        # Determine increment or decrement for next letter.
+        if [[ "${lett_col}" -eq "${startcol}" ]]; then
+            step=6
+        elif [[ "${lett_col}" -eq $((${startcol}+30)) ]]; then
+            step=-6
+        fi
 
-	done
-	# Add space.
-	echo -ne " "
+    done
+    # Add space.
+    echo -ne " "
 
 }
 export -f _theme_gradient

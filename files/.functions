@@ -3,7 +3,8 @@
 # Functions -------------------
 # UWM VPN
 #oc() { sudo openconnect -u prestega --juniper vpn.uwm.edu -b --no-cert-check; }
-oc() { sudo /usr/sbin/openconnect -u prestega --juniper vpn.uwm.edu --script /etc/vpnc/vpnc-script; }
+#oc() { sudo /usr/sbin/openconnect -u prestega --juniper vpn.uwm.edu --script /etc/vpnc/vpnc-script; }
+oc() { sudo /usr/sbin/openconnect -u prestega --juniper vpn.uwm.edu; }
 export -f oc
 
 # SSH functions ---------------
@@ -84,10 +85,10 @@ gdb () {
 sdb() { myvar="OK"; gsissh -YA simdb.cgca.uwm.edu; }
 lva() { gsissh -YA lvalert.cgca.uwm.edu; }
 lva-test() { gsissh -YA lvalert-test.cgca.uwm.edu; }
-ligo-rm() { gsissh -YA ligo-rm.phys.uwm.edu; }
+remote() { gsissh -YA remote.ligo.uwm.edu; }
 dashboard() { gsissh -YA dashboard.cgca.uwm.edu; }
 cgca() { gsissh -YA $1.cgca.uwm.edu; } # generic function for any cgca.uwm.edu machine
-export -f gdb sdb lva lva-test ligo-rm dashboard cgca
+export -f gdb sdb lva lva-test remote dashboard cgca
 # NEMO computers
 uwmpcdev() { ligo_setup; gsissh -YA pcdev$1.phys.uwm.edu; }
 export -f uwmpcdev

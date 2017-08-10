@@ -15,20 +15,20 @@ if [[ $(lsb_release -si) != "Debian" ]]; then
     if [[ -d "$HOME/bin" ]] ; then
         export PATH="$HOME/bin:$PATH"
     fi
-	if [[ -r "$HOME/.functions" ]] && [[ -f "$HOME/.functions" ]]; then
-		source "$HOME/.functions"
-	fi
+    if [[ -r "$HOME/.functions" ]] && [[ -f "$HOME/.functions" ]]; then
+        source "$HOME/.functions"
+    fi
     # Set TERM to be xterm-256color
     if [[ "$TERM" == "xterm" ]]; then
         export TERM=xterm-256color
     fi
     # Custom prompt
     if [[ -f "$HOME/bin/prompt" ]]; then
-	    source $HOME/bin/prompt
+        source $HOME/bin/prompt
     fi
     # Export editor
     if [[ ! -z $(which vim) ]]; then
-	    export EDITOR=$(which vim)
+        export EDITOR=$(which vim)
     fi
 fi
 
@@ -36,7 +36,7 @@ fi
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
     if [[ -f "$HOME/.bashrc" ]]; then
-		. "$HOME/.bashrc"
+        . "$HOME/.bashrc"
     fi
 fi
 

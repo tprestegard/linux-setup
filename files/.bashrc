@@ -74,9 +74,9 @@ if [[ $(lsb_release -si) == "Debian" ]]; then
     if [[ -d "$HOME/bin" ]] ; then
         export PATH="$HOME/bin:$PATH"
     fi
-	if [[ -r "$HOME/.functions" ]] && [[ -f "$HOME/.functions" ]]; then
-		source "$HOME/.functions"
-	fi
+    if [[ -r "$HOME/.functions" ]] && [[ -f "$HOME/.functions" ]]; then
+        source "$HOME/.functions"
+    fi
     if [[ "$TERM" == "xterm" ]]; then
         export TERM="xterm-256color"
     fi
@@ -92,13 +92,13 @@ fi
 # Set up prompt.
 #source $HOME/bin/prompt
 if [[ -f "$HOME/bin/prompt" ]]; then
-	export PROMPT_COMMAND='PS1=`_theme_random_color_xtreme `'
+    export PROMPT_COMMAND='PS1=`_theme_random_color_xtreme `'
 else
-	# Default prompt
-	titlebar="\[\e]2;\u@\h \w\a\]"
-	user="\[\e[1;35m\]\u\[\e[m\]@\[\e[1;33m\]\h\[\e[m\]"
-	path_list="\[\e[1;31m\]\w\[\e[m\]"
-	export PS1="${titlebar}[${user}:${path_list}]\$ "
+    # Default prompt
+    titlebar="\[\e]2;\u@\h \w\a\]"
+    user="\[\e[1;35m\]\u\[\e[m\]@\[\e[1;33m\]\h\[\e[m\]"
+    path_list="\[\e[1;31m\]\w\[\e[m\]"
+    export PS1="${titlebar}[${user}:${path_list}]\$ "
 fi
 
 # Other setup
@@ -112,7 +112,7 @@ shopt -s extglob
 alias lh='ls -lh'
 alias emacs='emacs -nw'
 if [[ -f "$HOME/bin/theme" ]]; then
-	alias theme='source theme' # allows theme to be changed on-the-fly
+    alias theme='source theme' # allows theme to be changed on-the-fly
 fi
 # sudo/su environment aliases
 alias sudoE='sudo -E '

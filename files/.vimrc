@@ -7,6 +7,10 @@ let g:badwolf_darkgutter = 1
 " syntax processing
 syntax enable
 
+" backup
+set backup
+set backupdir=~/.vim/backup//
+
 " set up tabs to be 4 spaces
 set tabstop=4
 set softtabstop=4

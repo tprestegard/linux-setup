@@ -1,6 +1,7 @@
 # Temp vim files
 *.swp
 files/.vim/.netrwhist
+files/.vim/backup/*~
 
 # Decrypted files
 # don't need this anymore since we are using git-crypt

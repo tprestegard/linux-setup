@@ -93,6 +93,41 @@ export -f gdb sdb lva lva-test remote dashboard cgca
 uwmpcdev() { ligo_setup; gsissh -YA pcdev$1.phys.uwm.edu; }
 export -f uwmpcdev
 
+# Set up SOCKS proxy
+socks() {
+    COMMAND=$1
+    HOST=$2
+    PIDFILE='/tmp/socks.pid'
+
+    if [[ ${COMMAND} == 'start' ]]; then
+        CMD="ssh -D 8080 -f -C -q -N ${HOST}"
+
+        # Check if a SOCKS proxy is already running; if so, fail
+        if [[ ! -z $(pgrep -f "${CMD}") ]]; then
+            echo "ERROR: a SOCKS proxy is already running"
+            return 1
+        fi
+        eval ${CMD}
+        PID=$(pgrep -f "${CMD}")
+        echo ${PID} > ${PIDFILE}
+        echo "SOCKS connection to ${HOST} with pid ${PID} started"
+    elif [[ ${COMMAND} == 'stop' ]]; then
+        if [[ -s ${PIDFILE} ]]; then
+            PID=$(cat ${PIDFILE})
+            kill ${PID}
+            rm ${PIDFILE}
+            echo "SOCKS connection on pid ${PID} stopped"
+        else
+            echo "ERROR: no pidfile found for any currently running SOCKS proxy"
+            return 1
+        fi
+    else
+        echo "ERROR: subcommands are 'start' or 'stop'"
+        return 1
+    fi
+}
+
+
 # Other useful functions -------------------------------------------------
 # make a directory and go to it.
 mkdircd() { mkdir -p -- "$1" && cd -P -- "$1"; }

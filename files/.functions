@@ -100,6 +100,10 @@ socks() {
     PIDFILE='/tmp/socks.pid'
 
     if [[ ${COMMAND} == 'start' ]]; then
+        if [[ "$#" -ne 2 ]]; then
+            echo "USAGE: socks start [hostname]"
+            return
+        fi
         CMD="ssh -D 8080 -f -C -q -N ${HOST}"
 
         # Check if a SOCKS proxy is already running; if so, fail
@@ -112,6 +116,10 @@ socks() {
         echo ${PID} > ${PIDFILE}
         echo "SOCKS connection to ${HOST} with pid ${PID} started"
     elif [[ ${COMMAND} == 'stop' ]]; then
+        if [[ "$#" -ne 1 ]]; then
+            echo "USAGE: socks stop"
+            return
+        fi
         if [[ -s ${PIDFILE} ]]; then
             PID=$(cat ${PIDFILE})
             kill ${PID}
@@ -188,4 +196,4 @@ fileswap() {
     local TMPFILE=tmp.$$
     mv "$1" $TMPFILE && mv "$2" "$1" && mv $TMPFILE "$2"
 }
-export -f mkdircd cdls cdu fileswap
+export -f mkdircd cdls cdu fileswap socks

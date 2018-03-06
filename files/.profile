@@ -10,7 +10,7 @@
 
 # Import functions and set $TERM (for Ubuntu).
 # For Debian, we have to do this in .bashrc.
-if [[ $(lsb_release -si) != "Debian" ]]; then
+if [[ $(lsb_release -si) != "Debian" ]] || ([[ $(lsb_release -si) == 'Ubuntu' ]] && [[ $(lsb_release -sr) == '18.04' ]]); then
     # set PATH so it includes user's private bin if it exists
     if [[ -d "$HOME/bin" ]] ; then
         export PATH="$HOME/bin:$PATH"

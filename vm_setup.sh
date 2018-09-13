@@ -199,6 +199,8 @@ You're all set!  Other things to do manually:
   - Set up ldg-client; can be tricky depending on OS.  Here is the command:
       wget http://www.lsc-group.phys.uwm.edu/lscdatagrid/doc/ldg-client.sh -O /tmp/ldg-client.sh && sudo bash /tmp/ldg-client.sh
     You might have to do some editing of the script, changing the repositories, etc.
+    You also might need to install osg-ca-certs with this file (or a newer version):
+      https://vdt.cs.wisc.edu/svn/certs/trunk/cadist/release/osg-ca-certs-1.74NEW-0.deb
   - Change terminal shortcuts
     - Shift + arrow for moving between tabs
     - Ctrl + Shift + arrow for moving tab positions

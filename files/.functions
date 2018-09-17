@@ -2,10 +2,9 @@
 
 # Functions -------------------
 # UWM VPN
-#oc() { sudo openconnect -u prestega --juniper vpn.uwm.edu -b --no-cert-check; }
-#oc() { sudo /usr/sbin/openconnect -u prestega --juniper vpn.uwm.edu --script /etc/vpnc/vpnc-script; }
-oc() { sudo /usr/sbin/openconnect -u prestega --juniper vpn.uwm.edu; }
-export -f oc
+oc_old() { sudo openconnect --user=prestega --protocol=nc --servercert pin-sha256:FoefFm4Xp32PdyKWas0PgQzilhxcs4WmAr6i6d+6M6U= vpn.uwm.edu; }
+oc() { sudo openconnect --user=prestega --protocol=gp --servercert pin-sha256:d7kLsXasqmgE8t2y3dtNbLdZJ8mGcQz4rnqwltQe0WY= gp-gateway.uwm.edu; }
+export -f oc_old oc
 
 # SSH functions ---------------
 # Raspberry Pi
@@ -82,13 +81,12 @@ gdb () {
 
     gsissh -YA ${user}@${host}
 }
-sdb() { myvar="OK"; gsissh -YA simdb.cgca.uwm.edu; }
 lva() { gsissh -YA lvalert.cgca.uwm.edu; }
 lva-test() { gsissh -YA lvalert-test.cgca.uwm.edu; }
 remote() { gsissh -YA remote.ligo.uwm.edu; }
 dashboard() { gsissh -YA dashboard.cgca.uwm.edu; }
 cgca() { gsissh -YA $1.cgca.uwm.edu; } # generic function for any cgca.uwm.edu machine
-export -f gdb sdb lva lva-test remote dashboard cgca
+export -f gdb lva lva-test remote dashboard cgca
 # NEMO computers
 uwmpcdev() { ligo_setup; gsissh -YA pcdev$1.phys.uwm.edu; }
 export -f uwmpcdev

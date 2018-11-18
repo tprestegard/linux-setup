@@ -10,6 +10,7 @@ STORE_DIR=".linux-setup-store"
 # Keys are the file names, values are the directories.
 declare -A nonhomefiles
 nonhomefiles["config"]="${HOME}/.ssh"
+nonhomefiles["kaggle.json"]=${HOME}/.kaggle
 
 # Main code ##########################################################
 

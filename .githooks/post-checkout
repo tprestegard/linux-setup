@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-PROTECTED_FILES=( "files/config" "files/.pypirc" "files/.netrc")
+PROTECTED_FILES=( "files/config" "files/.pypirc" "files/.netrc" "files/kaggle.json" )
 
 for FILE in "${PROTECTED_FILES[@]}"
 do

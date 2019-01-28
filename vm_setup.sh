@@ -72,7 +72,7 @@ fi
 echo "Updating and installing packages..."
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install vim git python-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper gem ruby-dev dirmngr openconnect tmux texlive-publishers git-crypt 
+sudo apt-get install vim git python-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper gem ruby-dev dirmngr openconnect tmux texlive-publishers git-crypt tox
 sudo apt-get dist-upgrade
 
 # Run cleanup

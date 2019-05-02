@@ -1,0 +1,51 @@
+#! /usr/bin/env bash
+
+# Require kubectl to be installed
+if [[ -z $(which kubectl) ]]; then
+    echo "'kubectl' is not installed and is required"
+    exit
+fi
+
+# Args: must provide an app name; can provide a pod number, which is just
+# the line number the pod is at in the list of pods provided by
+# 'kubectl get pods'
+APP_NAME=$1
+POD_NUMBER=$2
+
+# Check required app name arg
+if [[ -z "${APP_NAME}" ]]; then
+    echo "usage: kubelogin APP_NAME [POD_NUMBER]"
+    exit 1
+fi
+
+# Handle optional pod number arg
+if [[ ! -z "${POD_NUMBER}" ]]; then
+    if [[ "${POD_NUMBER}" < 1 ]]; then
+        echo "POD_NUMBER must be >= 1"
+        exit 1
+    else
+        LINE_NUMBER=$((POD_NUMBER+1))
+    fi
+else
+    LINE_NUMBER=2
+fi
+
+# Get list of pods
+POD_LIST=$(kubectl get pods -l app=${APP_NAME} 2>/dev/null)
+if [[ -z "${POD_LIST}" ]]; then
+    echo "No pods found for app '${APP_NAME}'"
+    exit 1
+fi
+
+# Get pod name
+POD_NAME=$(echo "${POD_LIST}" | sed -n ${LINE_NUMBER}p | cut -d' ' -f1)
+if [[ -z "${POD_NAME}" ]]; then
+    N=$((LINE_NUMBER-1))
+    echo "Pod ${N} not found, it's likely that there are fewer than ${N} pods in app '${APP_NAME}'"
+    exit 1
+fi
+
+# Log in
+echo "Logging in to ${POD_NAME}..."
+sleep 1
+kubectl exec -ti ${POD_NAME} -- /bin/bash -l

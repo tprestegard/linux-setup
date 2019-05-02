@@ -1,0 +1,17 @@
+#! /usr/bin/env bash
+
+
+# Get pods
+PODS=$(kubectl get pods -l app=gracedb-prod | tail -n +2 | cut -d' ' -f1)
+
+# Create temporary file
+TMP_FILE=$(mktemp -q)
+
+for POD in $PODS;
+do
+    #kubectl logs $POD --timestamps=true | awk '{printf $1 FS "test" FS ; for (i=2; i<=NF; ++i) printf $i FS; print ""}' >> $TMP_FILE
+    kubectl logs $POD --timestamps=true >> $TMP_FILE
+done
+
+cat $TMP_FILE | sort > ./new.log
+rm $TMP_FILE

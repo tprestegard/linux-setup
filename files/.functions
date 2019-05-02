@@ -39,13 +39,6 @@ export -f ligo_setup pcdev pcgrid atlas titan lho llo uwm sugar emfollow
 # UWM computers
 gdb () {
     
-    # check grid proxy
-    grid-proxy-info -e > /dev/null 2>&1
-    if [[ "$?" -ne 0 ]]; then
-        echo "ERROR: no grid proxy. Run ligo-proxy-init."
-        return
-    fi
-
     # if more than 2 args and 2nd is not -g, fail
     if [[ "$#" -eq 2 ]] && [[ "$2" != "-g" ]]; then
         echo "ERROR: 2nd argument should be '-g', not be '$2'"
@@ -64,8 +57,7 @@ gdb () {
         user=${GRACEDB_USER}
         gdb_bool=1
     else
-        # Hacky method for getting username from grid cert
-        user=$(grid-proxy-info -s | awk '{print $3}' | awk -F'@' '{print $1}')
+        user="tanner.prestegard"
     fi
 
     # Set up hostname
@@ -79,7 +71,7 @@ gdb () {
     fi
     host+=".${DOMAIN}"
 
-    gsissh -YA ${user}@${host}
+    ssh -YA ${user}@${host}
 }
 lva() { gsissh -YA lvalert.cgca.uwm.edu; }
 lva-test() { gsissh -YA lvalert-test.cgca.uwm.edu; }

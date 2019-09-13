@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# git-adog: git log --all --oneline --decorate --graph
+
+set -e
+
+git log --all --oneline --decorate --graph

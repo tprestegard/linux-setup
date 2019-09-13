@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# git-tagl: nice tag listing
+
+set -e
+
+git tag -l --sort=v:refname -n

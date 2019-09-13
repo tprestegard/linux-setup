@@ -23,7 +23,7 @@ set expandtab
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " change tabs for yaml and .pp (Puppet) files
-au Filetype yaml,puppet set ts=2 sts=2 sw=2 et
+au Filetype yml,yaml,puppet set ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.pp set filetype=puppet
 " same for eyaml files, plus use yaml syntax highlighting
 au BufRead,BufNewFile *.eyaml set maxmempattern=2000 filetype=yaml

@@ -1,3 +1,4 @@
+*.pyc
 # Temp vim files
 *.swp
 files/.vim/.netrwhist

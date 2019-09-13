@@ -122,4 +122,7 @@ alias tn='tmux new -s'
 alias ta='tmux attach -t'
 alias tl='tmux ls'
 
+# kops and kubectl completion
 source <(kubectl completion bash)
+source <(kops completion bash)
+source <(helm completion bash)

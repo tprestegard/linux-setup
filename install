@@ -11,6 +11,8 @@ STORE_DIR=".linux-setup-store"
 declare -A nonhomefiles
 nonhomefiles["config"]="${HOME}/.ssh"
 nonhomefiles["kaggle.json"]=${HOME}/.kaggle
+nonhomefiles["config.fish"]=${HOME}/.config/fish
+nonhomefiles["functions"]=${HOME}/.config/fish
 
 # Main code ##########################################################
 

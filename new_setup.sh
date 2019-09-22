@@ -6,7 +6,8 @@
 read -d '' STUFF <<"EOF"
 Things to do before running this script:
   1. Set up sudo:
-  2. Install Google Chrome (sudo apt-get install google-chrome-stable)
+  2. Install Google Chrome
+     (Add repo and signing key, then do(sudo apt-get install google-chrome-stable)
   3. Add LastPass to Chrome
   4. Set up GPG keys
   5. Set up SSH keys
@@ -72,7 +73,7 @@ fi
 echo "Updating and installing packages..."
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install vim git python-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox
+sudo apt-get install vim git python-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox curl
 sudo apt-get dist-upgrade
 
 # Run cleanup
@@ -92,7 +93,6 @@ if [[ ! -d "notes" ]]; then
     git clone --config core.hooksPath=.githooks git@github.com:tprestegard/notes.git > /dev/null
     cd notes
     git-crypt unlock > /dev/null
-    git config --local user.email "tprestegard@gmail.com"
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -107,6 +107,15 @@ if [[ ! -d "ligo" ]]; then
 fi
 cd ligo
 
+# cgca-config repo
+echo -n "Setting up cgca-config repository..."
+if [[ ! -d "cgca-config" ]]; then
+    git clone https://git.ligo.org/cgca-computing-team/cgca-config.git > /dev/null
+    git config --local user.email "tanner.prestegard@ligo.org"
+    echo "DONE"
+else
+    echo "ALREADY SETUP"
+fi
 # GraceDB repos
 if [[ ! -d "gracedb" ]]; then
     echo -n "Setting up $(HOME)/ligo/gracedb directory..."
@@ -117,6 +126,7 @@ cd gracedb
 echo -n "Setting up gracedb repository..."
 if [[ ! -d "gracedb" ]]; then
     git clone https://git.ligo.org/lscsoft/gracedb.git > /dev/null
+    git config --local user.email "tanner.prestegard@ligo.org"
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -124,6 +134,15 @@ fi
 echo -n "Setting up gracedb-client repository..."
 if [[ ! -d "gracedb-client" ]]; then
     git clone https://git.ligo.org/lscsoft/gracedb-client.git > /dev/null
+    git config --local user.email "tanner.prestegard@ligo.org"
+    echo "DONE"
+else
+    echo "ALREADY SETUP"
+fi
+echo -n "Setting up gracedb-aws-deploy repository..."
+if [[ ! -d "gracedb-aws-deploy" ]]; then
+    git clone https://git.ligo.org/cgca-computing-team/gracedb-aws-deploy.git > /dev/null
+    git config --local user.email "tanner.prestegard@ligo.org"
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -138,17 +157,19 @@ git config --global gpg.program gpg2
 git config --global user.signingkey 1C3ED495
 git config --global commit.gpgsign true
 
-# Use gmail for linux-setup and notes
-cd $HOME/linux-setup
-git config --local user.email "tprestegard@gmail.com"
-echo "DONE"
-
 # Install kubectl
 sudo apt-get update && sudo apt-get install -y apt-transport-https
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubectl
+
+# Install fish shell and select as default
+sudo apt-get install fish
+chsh -s $(which fish)
+
+# Install virtualfish
+sudo pip install virtualfish
 
 # Things to do manually at the end
 echo ""

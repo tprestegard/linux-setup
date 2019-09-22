@@ -69,7 +69,7 @@ fi
 
 # Debian: do a bunch of stuff which should be done in
 # .profile but doesn't work. Have to do the same for Ubuntu 18.04
-if [[ $(lsb_release -si) == "Debian" ]] || ([[ $(lsb_release -si) == 'Ubuntu' ]] && [[ $(lsb_release -sr) == '18.04' ]]); then
+if [[ $(lsb_release -si) == "Debian" ]] || ([[ $(lsb_release -si) == 'Ubuntu' ]] && [[ $(lsb_release -sr) == '19.04' ]]); then
     # set PATH so it includes user's private bin if it exists
     if [[ -d "$HOME/bin" ]] ; then
         export PATH="$HOME/bin:$PATH"
@@ -124,5 +124,5 @@ alias tl='tmux ls'
 
 # kops and kubectl completion
 source <(kubectl completion bash)
-source <(kops completion bash)
-source <(helm completion bash)
+#source <(kops completion bash)
+#source <(helm completion bash)

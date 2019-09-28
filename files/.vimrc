@@ -1,6 +1,6 @@
 " color scheme
-"colorscheme distinguished
-colorscheme badwolf
+colorscheme distinguished
+"colorscheme badwolf
 let g:badwolf_darkgutter = 1
 "let g:badwolf_tabline = 0
 
@@ -21,6 +21,9 @@ set expandtab
 
 " Turn off weird pasting behavior
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
+" Custom syntax highlighting for yaml; builtin = very slow
+au BufNewFile,BufRead *.yaml,*.yml so ~/.vim/yaml.vim
 
 " change tabs for yaml and .pp (Puppet) files
 au Filetype yml,yaml,puppet set ts=2 sts=2 sw=2 et

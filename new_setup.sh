@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 # Script for setting up a machine
-
+# TODO: add cloning/setup of Tortuga repos
+# TODO: add manual setup of Univa repos behind VPN
 
 # Print things to do before running this script
 read -d '' STUFF <<"EOF"
@@ -73,7 +74,7 @@ fi
 echo "Updating and installing packages..."
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install vim git python-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox curl
+sudo apt-get install vim git python-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox curl awsclie
 sudo apt-get dist-upgrade
 
 # Run cleanup
@@ -91,6 +92,8 @@ cd $HOME
 echo -n "Setting up notes repository..."
 if [[ ! -d "notes" ]]; then
     git clone --config core.hooksPath=.githooks git@github.com:tprestegard/notes.git > /dev/null
+    git config --local user.email "tprestegard@gmail.com"
+    git config --local user.signingkey 01299B361C3ED495
     cd notes
     git-crypt unlock > /dev/null
     echo "DONE"
@@ -112,6 +115,7 @@ echo -n "Setting up cgca-config repository..."
 if [[ ! -d "cgca-config" ]]; then
     git clone https://git.ligo.org/cgca-computing-team/cgca-config.git > /dev/null
     git config --local user.email "tanner.prestegard@ligo.org"
+    git config --local user.signingkey 95289B36EA2F4460
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -127,6 +131,7 @@ echo -n "Setting up gracedb repository..."
 if [[ ! -d "gracedb" ]]; then
     git clone https://git.ligo.org/lscsoft/gracedb.git > /dev/null
     git config --local user.email "tanner.prestegard@ligo.org"
+    git config --local user.signingkey 95289B36EA2F4460
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -135,6 +140,7 @@ echo -n "Setting up gracedb-client repository..."
 if [[ ! -d "gracedb-client" ]]; then
     git clone https://git.ligo.org/lscsoft/gracedb-client.git > /dev/null
     git config --local user.email "tanner.prestegard@ligo.org"
+    git config --local user.signingkey 95289B36EA2F4460
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -143,6 +149,7 @@ echo -n "Setting up gracedb-aws-deploy repository..."
 if [[ ! -d "gracedb-aws-deploy" ]]; then
     git clone https://git.ligo.org/cgca-computing-team/gracedb-aws-deploy.git > /dev/null
     git config --local user.email "tanner.prestegard@ligo.org"
+    git config --local user.signingkey 95289B36EA2F4460
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -152,9 +159,9 @@ fi
 echo -n "Setting up git configuration..."
 git config --global core.editor vim
 git config --global user.name "Tanner Prestegard"
-git config --global user.email "tprestegard@gmail.com"
+git config --global user.email "tprestegard@univa.com"
 git config --global gpg.program gpg2
-git config --global user.signingkey 1C3ED495
+git config --global user.signingkey 95289B36EA2F4460
 git config --global commit.gpgsign true
 
 # Install kubectl
@@ -163,6 +170,12 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubectl
+
+# Install Google Cloud SDK
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+sudo apt-get install apt-transport-https ca-certificates
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+sudo apt-get update && sudo apt-get install google-cloud-sdk
 
 # Install fish shell and select as default
 sudo apt-get install fish
@@ -182,6 +195,7 @@ You're all set!  Other things to do manually:
   - Change settings
     - Set Ctrl+Alt+T as a custom shortcut for starting new terminal
     - Turn display off after 15 minutes
+  - Set up Univa VPN
 EOF
 echo "${STUFF}"
 echo ""

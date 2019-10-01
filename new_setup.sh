@@ -93,7 +93,7 @@ echo -n "Setting up notes repository..."
 if [[ ! -d "notes" ]]; then
     git clone --config core.hooksPath=.githooks git@github.com:tprestegard/notes.git > /dev/null
     git config --local user.email "tprestegard@gmail.com"
-    git config --local user.signingkey 01299B361C3ED495
+    git config --local user.signingkey E70E3FE26E9D0292
     cd notes
     git-crypt unlock > /dev/null
     echo "DONE"
@@ -101,7 +101,7 @@ else
     echo "ALREADY SETUP"
 fi
 
-# Work repos
+# LIGO repos
 cd $HOME
 if [[ ! -d "ligo" ]]; then
     echo -n "Creating $HOME/ligo directory..."
@@ -115,7 +115,7 @@ echo -n "Setting up cgca-config repository..."
 if [[ ! -d "cgca-config" ]]; then
     git clone https://git.ligo.org/cgca-computing-team/cgca-config.git > /dev/null
     git config --local user.email "tanner.prestegard@ligo.org"
-    git config --local user.signingkey 95289B36EA2F4460
+    git config --local user.signingkey 01299B361C3ED495
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -131,7 +131,7 @@ echo -n "Setting up gracedb repository..."
 if [[ ! -d "gracedb" ]]; then
     git clone https://git.ligo.org/lscsoft/gracedb.git > /dev/null
     git config --local user.email "tanner.prestegard@ligo.org"
-    git config --local user.signingkey 95289B36EA2F4460
+    git config --local user.signingkey 01299B361C3ED495
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -140,7 +140,7 @@ echo -n "Setting up gracedb-client repository..."
 if [[ ! -d "gracedb-client" ]]; then
     git clone https://git.ligo.org/lscsoft/gracedb-client.git > /dev/null
     git config --local user.email "tanner.prestegard@ligo.org"
-    git config --local user.signingkey 95289B36EA2F4460
+    git config --local user.signingkey 01299B361C3ED495
     echo "DONE"
 else
     echo "ALREADY SETUP"
@@ -149,20 +149,48 @@ echo -n "Setting up gracedb-aws-deploy repository..."
 if [[ ! -d "gracedb-aws-deploy" ]]; then
     git clone https://git.ligo.org/cgca-computing-team/gracedb-aws-deploy.git > /dev/null
     git config --local user.email "tanner.prestegard@ligo.org"
-    git config --local user.signingkey 95289B36EA2F4460
+    git config --local user.signingkey 01299B361C3ED495
+    echo "DONE"
+else
+    echo "ALREADY SETUP"
+fi
+
+# Univa github repos
+cd $HOME
+if [[ ! -d "univa" ]]; then
+    echo -n "Creating $HOME/univa directory..."
+    mkdir univa
+    echo "DONE"
+fi
+cd univa
+echo -n "Setting up tortuga repository..."
+if [[ ! -d "tortuga" ]]; then
+    git clone git@github.com:tprestegard/tortuga.git > /dev/null
+    git config --local user.email "tprestegard@gmail.com"
+    git config --local user.signingkey E70E3FE26E9D0292
+    echo "DONE"
+else
+    echo "ALREADY SETUP"
+fi
+echo -n "Setting up tortuga-kit-awsadapter repository..."
+if [[ ! -d "tortuga-kit-awsadapter" ]]; then
+    git clone git@github.com:tprestegard/tortuga-kit-awsadapter.git > /dev/null
+    git config --local user.email "tprestegard@gmail.com"
+    git config --local user.signingkey E70E3FE26E9D0292
     echo "DONE"
 else
     echo "ALREADY SETUP"
 fi
 
 # Git configuration
-echo -n "Setting up git configuration..."
+echo -n "Setting up global git configuration..."
 git config --global core.editor vim
 git config --global user.name "Tanner Prestegard"
-git config --global user.email "tprestegard@univa.com"
 git config --global gpg.program gpg2
-git config --global user.signingkey 95289B36EA2F4460
 git config --global commit.gpgsign true
+# Don't set up email or signingkey by default - force myself to set up email and signing key separately for each one
+#git config --global user.email "tprestegard@univa.com"
+#git config --global user.signingkey 95289B36EA2F4460
 
 # Install kubectl
 sudo apt-get update && sudo apt-get install -y apt-transport-https

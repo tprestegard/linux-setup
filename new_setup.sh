@@ -8,7 +8,7 @@ read -d '' STUFF <<"EOF"
 Things to do before running this script:
   1. Set up sudo:
   2. Install Google Chrome
-     (Add repo and signing key, then do(sudo apt-get install google-chrome-stable)
+     (Add repo and signing key, then do 'sudo apt-get install google-chrome-stable')
   3. Add LastPass to Chrome
   4. Set up GPG keys
   5. Set up SSH keys
@@ -74,7 +74,7 @@ fi
 echo "Updating and installing packages..."
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install vim git python-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox curl awsclie
+sudo apt-get install vim git python-pip python3-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox curl awscli
 sudo apt-get dist-upgrade
 
 # Run cleanup
@@ -114,9 +114,11 @@ cd ligo
 echo -n "Setting up cgca-config repository..."
 if [[ ! -d "cgca-config" ]]; then
     git clone https://git.ligo.org/cgca-computing-team/cgca-config.git > /dev/null
+    cd cgca-config
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
     echo "DONE"
+    cd ../
 else
     echo "ALREADY SETUP"
 fi
@@ -130,27 +132,33 @@ cd gracedb
 echo -n "Setting up gracedb repository..."
 if [[ ! -d "gracedb" ]]; then
     git clone https://git.ligo.org/lscsoft/gracedb.git > /dev/null
+    cd gracedb
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
     echo "DONE"
+    cd ../
 else
     echo "ALREADY SETUP"
 fi
 echo -n "Setting up gracedb-client repository..."
 if [[ ! -d "gracedb-client" ]]; then
     git clone https://git.ligo.org/lscsoft/gracedb-client.git > /dev/null
+    cd gracedb-client
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
     echo "DONE"
+    cd ../
 else
     echo "ALREADY SETUP"
 fi
 echo -n "Setting up gracedb-aws-deploy repository..."
 if [[ ! -d "gracedb-aws-deploy" ]]; then
     git clone https://git.ligo.org/cgca-computing-team/gracedb-aws-deploy.git > /dev/null
+    cd gracedb-aws-deploy
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
     echo "DONE"
+    cd ../
 else
     echo "ALREADY SETUP"
 fi
@@ -165,19 +173,23 @@ fi
 cd univa
 echo -n "Setting up tortuga repository..."
 if [[ ! -d "tortuga" ]]; then
-    git clone git@github.com:tprestegard/tortuga.git > /dev/null
-    git config --local user.email "tprestegard@gmail.com"
-    git config --local user.signingkey E70E3FE26E9D0292
+    git clone git@github.com:UnivaCorporation/tortuga.git > /dev/null
+    cd tortuga
+    git config --local user.email "tprestegard@univa.com"
+    git config --local user.signingkey 95289B36EA2F4460
     echo "DONE"
+    cd ../
 else
     echo "ALREADY SETUP"
 fi
 echo -n "Setting up tortuga-kit-awsadapter repository..."
 if [[ ! -d "tortuga-kit-awsadapter" ]]; then
-    git clone git@github.com:tprestegard/tortuga-kit-awsadapter.git > /dev/null
-    git config --local user.email "tprestegard@gmail.com"
-    git config --local user.signingkey E70E3FE26E9D0292
+    git clone git@github.com:UnivaCorporation/tortuga-kit-awsadapter.git > /dev/null
+    cd tortuga-kit-awsadapter
+    git config --local user.email "tprestegard@univa.com"
+    git config --local user.signingkey 95289B36EA2F4460
     echo "DONE"
+    cd ../
 else
     echo "ALREADY SETUP"
 fi
@@ -195,19 +207,19 @@ git config --global commit.gpgsign true
 # Install kubectl
 sudo apt-get update && sudo apt-get install -y apt-transport-https
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+[[ ! -f /etc/apt/sources.list.d/kubernetes.list ]] && echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubectl
 
 # Install Google Cloud SDK
-echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+[[ ! -f /etc/apt/sources.list.d/google-cloud-sdk.list ]] && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 sudo apt-get install apt-transport-https ca-certificates
 curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 sudo apt-get update && sudo apt-get install google-cloud-sdk
 
 # Install fish shell and select as default
 sudo apt-get install fish
-chsh -s $(which fish)
+[[ ! "${SHELL}" =~ "fish" ]] && chsh -s $(which fish)
 
 # Install virtualfish
 sudo pip install virtualfish

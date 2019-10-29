@@ -95,9 +95,9 @@ cd $HOME
 echo -n "Setting up notes repository..."
 if [[ ! -d "notes" ]]; then
     git clone --config core.hooksPath=.githooks git@github.com:tprestegard/notes.git > /dev/null
+    cd notes
     git config --local user.email "tprestegard@gmail.com"
     git config --local user.signingkey E70E3FE26E9D0292
-    cd notes
     git-crypt unlock > /dev/null
     echo "DONE"
 else
@@ -116,7 +116,7 @@ cd ligo
 # cgca-config repo
 echo -n "Setting up cgca-config repository..."
 if [[ ! -d "cgca-config" ]]; then
-    git clone https://git.ligo.org/cgca-computing-team/cgca-config.git > /dev/null
+    git clone git@git.ligo.org:cgca-computing-team/cgca-config.git > /dev/null
     cd cgca-config
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
@@ -134,7 +134,7 @@ fi
 cd gracedb
 echo -n "Setting up gracedb repository..."
 if [[ ! -d "gracedb" ]]; then
-    git clone https://git.ligo.org/lscsoft/gracedb.git > /dev/null
+    git clone git@git.ligo.org:lscsoft/gracedb.git > /dev/null
     cd gracedb
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
@@ -145,7 +145,7 @@ else
 fi
 echo -n "Setting up gracedb-client repository..."
 if [[ ! -d "gracedb-client" ]]; then
-    git clone https://git.ligo.org/lscsoft/gracedb-client.git > /dev/null
+    git clone git@git.ligo.org:lscsoft/gracedb-client.git > /dev/null
     cd gracedb-client
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
@@ -156,7 +156,7 @@ else
 fi
 echo -n "Setting up gracedb-aws-deploy repository..."
 if [[ ! -d "gracedb-aws-deploy" ]]; then
-    git clone https://git.ligo.org/cgca-computing-team/gracedb-aws-deploy.git > /dev/null
+    git clone git@git.ligo.org:cgca-computing-team/gracedb-aws-deploy.git > /dev/null
     cd gracedb-aws-deploy
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
@@ -240,6 +240,9 @@ You're all set!  Other things to do manually:
     - Set Ctrl+Alt+T as a custom shortcut for starting new terminal
     - Turn display off after 15 minutes
   - Set up Univa VPN
+  - Set up Slack
+  - Set up Zoom
+  - Set up bookmarks
 EOF
 echo "${STUFF}"
 echo ""

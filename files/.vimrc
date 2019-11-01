@@ -9,7 +9,7 @@ syntax enable
 
 " backup
 set backup
-set backupdir=~/.vim/backup//
+set backupdir=~/.vim/backup/
 
 " set up tabs to be 4 spaces
 set tabstop=4

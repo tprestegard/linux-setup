@@ -134,10 +134,11 @@ fi
 cd gracedb
 echo -n "Setting up gracedb repository..."
 if [[ ! -d "gracedb" ]]; then
-    git clone git@git.ligo.org:lscsoft/gracedb.git > /dev/null
+    git clone git@git.ligo.org:tanner.prestegard/gracedb.git > /dev/null
     cd gracedb
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
+    git remote add upstream git@git.ligo.org:lscsoft/gracedb.git
     echo "DONE"
     cd ../
 else
@@ -145,10 +146,11 @@ else
 fi
 echo -n "Setting up gracedb-client repository..."
 if [[ ! -d "gracedb-client" ]]; then
-    git clone git@git.ligo.org:lscsoft/gracedb-client.git > /dev/null
+    git clone git@git.ligo.org:tanner.prestegard/gracedb-client.git > /dev/null
     cd gracedb-client
     git config --local user.email "tanner.prestegard@ligo.org"
     git config --local user.signingkey 01299B361C3ED495
+    git remote add upstream git@git.ligo.org:lscsoft/gracedb-client.git
     echo "DONE"
     cd ../
 else

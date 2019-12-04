@@ -2,6 +2,7 @@
 # Temp vim files
 *.swp
 files/.vim/.netrwhist
+files/.vim/pack
 files/.vim/backup/*~
 
 # Decrypted files

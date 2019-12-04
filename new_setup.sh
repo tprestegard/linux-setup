@@ -74,7 +74,7 @@ fi
 echo "Updating and installing packages..."
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install vim git python-pip python3-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox curl awscli docker.io docker-compose
+sudo apt-get install vim git python-pip python3-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox curl awscli docker.io docker-compose jq
 sudo apt-get dist-upgrade
 
 # Add user to docker group
@@ -228,6 +228,14 @@ sudo apt-get install fish
 
 # Install virtualfish
 sudo pip install virtualfish
+
+# Install vim plugins
+## NERDTree
+git clone https://github.com/scrooloose/nerdtree.git ~/.vim/pack/vendor/start/nerdtree
+vim -u NONE -c "helptags ~/.vim/pack/vendor/start/nerdtree/doc" -c q
+
+## lightline
+git clone https://github.com/itchyny/lightline.vim ~/.vim/pack/plugins/start/lightline
 
 # Things to do manually at the end
 echo ""

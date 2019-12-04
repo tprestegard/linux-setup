@@ -31,6 +31,16 @@ au BufRead,BufNewFile *.pp set filetype=puppet
 " same for eyaml files, plus use yaml syntax highlighting
 au BufRead,BufNewFile *.eyaml set maxmempattern=2000 filetype=yaml
 
+" PLUGINS """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Map NERDTree to F2
+map <F2> :NERDTreeToggle<CR>
+
+" lightline
+set laststatus=2
+let g:lightline = { 'colorscheme': 'one', }
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " set smart case searches (only case-sensitive if capital letters are used)
 set ignorecase
 set smartcase

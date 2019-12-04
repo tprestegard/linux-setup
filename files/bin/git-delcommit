@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# git-delcommit: delete a single commit
+#   usage: git delcommit <COMMIT-SHA>
+
+set -e
+
+COMMIT_SHA="$1"
+shift
+git rebase -p --onto "${COMMIT_SHA}^" "${COMMIT_SHA}"

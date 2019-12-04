@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# git-inspect: see diffs for a single commit
+#   usage: git inspect <COMMIT-SHA> [OTHER-ARGS]
+
+set -e
+
+COMMIT_SHA="$1"
+shift
+git diff "${COMMIT_SHA}^" "${COMMIT_SHA}" $@

@@ -93,6 +93,10 @@ if [[ ${IS_VM} -eq 0 ]]; then
     sudo apt-get install vagrant virtualbox -y
 fi
 
+# Generate symlinks for custom git hooks
+cd $HOME/.githooks
+./generate-symlinks.sh
+
 # Set up git repositories -----------------------------------------------------
 echo ""
 echo "Setting up git repositories..."

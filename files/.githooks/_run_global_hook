@@ -1,0 +1,30 @@
+#! /bin/bash
+#
+# Check if the corresponding global hook should be run - return 1 if so,
+# 0 if not
+#
+# Usage: ./_run_global_hook <path-to-local-hook>
+
+# Check if local hooks path is set (core.localhookspath)
+if [[ -z "$1" ]]; then
+    # Local hook doesn't exist, so we run global hook
+    localhooks_exist=0
+    echo 1
+    exit 0
+else
+    localhooks_exist=1
+fi
+
+# Check if a config variable is set to specify how to merge hooks
+hooks_merge_strategy=$(git config --get --local core.hooksmergestrategy)
+if [[ "$?" -ne 0 ]] && [[ -z "${hooks_merge_strategy}" ]]; then
+    hooks_merge_strategy=0
+fi
+
+# If we are here, then local hooks exist
+if [[ "${hooks_merge_strategy}" -ne 0 ]]; then
+    echo 1
+else
+    echo 0
+fi
+exit 0

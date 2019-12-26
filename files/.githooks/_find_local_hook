@@ -1,0 +1,19 @@
+#! /bin/bash
+#
+# Get the path to the corresponding local hook. Return null if not found.
+#
+# Usage: ./_find_local_hook <hook-basename>
+set -u
+
+# Check if local hooks path is set (core.localhookspath)
+localhooks_path=$(git config --get --local core.localhookspath)
+if [[ "$?" -ne 0 ]] && [[ -z "${localhooks_path}" ]]; then
+    # Local hooks path is not set
+    localhooks_exist=0
+    exit 1
+else
+    hook_path=$(realpath "${localhooks_path}/$1")
+    if [[ -f ${hook_path} ]]; then
+        echo "${hook_path}"
+    fi
+fi

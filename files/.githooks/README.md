@@ -31,12 +31,12 @@ Do nothing - the global configuration takes care of this.
   ```
 * Set the merge strategy for combining global and local hooks:
   ```
-  git config --local core.hooksmergestrategy <val>
+  git config --local core.hookmergestrategy <val>
   ```
   where `<val>` can be 0 or 1:
   * 0: if a corresponding local hook exists, skip the global hook. Otherwise, run the global hook.
   * 1: run global hooks, then local hooks, if they exist.
-* If `core.hooksmergestrategy` is not set, then it will default to option 0.
+* If `core.hookmergestrategy` is not set, then it will default to option 0.
 
 
 ### Constructing a global hook

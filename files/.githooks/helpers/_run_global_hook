@@ -16,13 +16,13 @@ else
 fi
 
 # Check if a config variable is set to specify how to merge hooks
-hooks_merge_strategy=$(git config --get --local core.hooksmergestrategy)
-if [[ "$?" -ne 0 ]] && [[ -z "${hooks_merge_strategy}" ]]; then
-    hooks_merge_strategy=0
+hook_merge_strategy=$(git config --get --local core.hookmergestrategy)
+if [[ "$?" -ne 0 ]] && [[ -z "${hook_merge_strategy}" ]]; then
+    hook_merge_strategy=0
 fi
 
 # If we are here, then local hooks exist
-if [[ "${hooks_merge_strategy}" -ne 0 ]]; then
+if [[ "${hook_merge_strategy}" -ne 0 ]]; then
     echo 1
 else
     echo 0

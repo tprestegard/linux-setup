@@ -13,7 +13,7 @@ Things to do before running this script:
   6. Install git-crypt (sudo apt-get install git-crypt)
   7. Clone this repository (circular logic) and run the setup script
      cd $HOME
-     git clone --config core.hooksPath=.githooks git@github.com:tprestegard/linux-setup.git
+     git clone --config core.localhookspath=.githooks --config core.hookmergestrategy=1 git@github.com:tprestegard/linux-setup.git
      cd linux-setup
      git-crypt unlock
      ./install
@@ -186,6 +186,7 @@ git config --global user.email "tanner.prestegard@ligo.org"
 git config --global gpg.program gpg2
 git config --global user.signingkey 1C3ED495
 git config --global commit.gpgsign true
+git config --global core.hookspath ~/.githooks/hooks
 
 # Use gmail for linux-setup and notes
 cd $HOME/linux-setup

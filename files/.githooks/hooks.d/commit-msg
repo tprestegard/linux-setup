@@ -1,0 +1,22 @@
+#! /bin/bash
+
+_run () {
+    local RED='\e[1;31m'
+    local GREEN='\e[1;32m'
+    local NC='\e[0m'
+    
+    # Get list of files whose mode have changed
+    local fail=false
+    for file in $(git diff --cached --summary | grep 'mode change ' | awk '{print $6}'); do
+        grep "\[${file}:permissions\]" $1 > /dev/null 2>&1
+        if [[ "$?" != 0 ]]; then
+            echo -e "${RED}[fail]${NC} permissions have changed on ${file}. Add [${file}:permissions] to the commit message to allow this change."
+            fail=true
+        else
+            echo -e "${GREEN}[ok]${NC} permissions change on ${file} allowed."
+        fi
+    done
+    if $fail; then
+        exit 1
+    fi
+}

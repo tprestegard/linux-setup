@@ -1,34 +1,16 @@
 #! /bin/bash
+#
+# Usage: ./_hook_runner <name-of-hook> <git-arg1> ... <git-argN>
 
-################################################################################
-# Global hook function #########################################################
-################################################################################
-_run_hook () {
-    RED='\e[1;31m'
-    GREEN='\e[1;32m'
-    NC='\e[0m'
-    
-    # Get list of files whose mode have changed
-    fail=false
-    for file in $(git diff --cached --summary | grep 'mode change ' | awk '{print $6}'); do
-        grep "\[${file}:permissions\]" $1
-        if [[ "$?" != 0 ]]; then
-            echo -e "${RED}[fail]${NC} permissions have changed on ${file}. Add [${file}:permissions] to the commit message to allow this change."
-            fail=true
-        else
-            echo -e "${GREEN}[ok]${NC} permissions change on ${file} allowed."
-        fi
-    done
-    if $fail; then
-        exit 1
-    fi
-}
+# Process args
+hook_name=$1
+shift
 
 ################################################################################
 # Default checks ###############################################################
 ################################################################################
 # Get path to corresponding local hook
-local_hook_path=$(eval "$(dirname $0)/_find_local_hook $(basename $0)")
+local_hook_path=$(eval "$(dirname $0)/_find_local_hook ${hook_name}")
 # Check if this hook should be run, or just the local one
 run_global_hook=$(eval "$(dirname $0)/_run_global_hook ${local_hook_path}")
 
@@ -37,7 +19,13 @@ run_global_hook=$(eval "$(dirname $0)/_run_global_hook ${local_hook_path}")
 # Run global hook ##############################################################
 ################################################################################
 if [[ "${run_global_hook}" -eq 1 ]]; then
-    _run_hook "$@"
+    # If script exists, source it to get _run function, and run it.
+    # Otherwise, do nothing.
+    hook_script=$(realpath "$(dirname $0)/../hooks.d/${hook_name}")
+    if [[ -f "${hook_script}" ]]; then
+        source "${hook_script}"
+        _run "$@"
+    fi
 fi
 
 

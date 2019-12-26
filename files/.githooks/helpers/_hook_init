@@ -1,0 +1,4 @@
+#! /bin/bash
+
+cmd="$(realpath $(dirname $0)/../helpers/_hook_runner) $(basename $0) $@"
+eval "${cmd}"

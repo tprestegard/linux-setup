@@ -7,7 +7,7 @@ Note: `~/.githooks` is used in examples as the global hook directory.
 The "default" configuration is to use the global hooks directory.
 This has been configured by doing
 ```
-git config --global core.hookspath ~/.githooks
+git config --global core.hookspath ~/.githooks/hooks
 ```
 
 ### Individual repository configuration
@@ -39,14 +39,12 @@ Do nothing - the global configuration takes care of this.
 * If `core.hooksmergestrategy` is not set, then it will default to option 0.
 
 
-### constructing a global hook
-* All possible hooks must be instantiated in the global hooks directory.
-* They must at least contain the following content:
-  ```
-  . $(dirname 0)/_check_local_hooks
-  ```
+### Constructing a global hook
+1. Make sure a symlink exists for the hook in `~/.githooks/hooks` and is linked to `~/.githooks/helpers/_hook_init`. This can be done by updating `~/.githooks/generate-symlinks.sh`, if necessary.
+2. Create the actual hook by adding a bash script in `~/.githooks/hooks.d` with a `_run ()` function that contains the actual hook script.
 
 
 ## TODO
+Actual
 Some strategy for managing individual hooks to use global, local, or both.
 Maybe a JSON config file...

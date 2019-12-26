@@ -5,6 +5,9 @@ files/.vim/.netrwhist
 files/.vim/pack
 files/.vim/backup/*~
 
+# git hook symlinks
+files/.githooks/hooks
+
 # Decrypted files
 # don't need this anymore since we are using git-crypt
 #files/config

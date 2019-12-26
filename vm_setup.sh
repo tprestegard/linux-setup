@@ -97,6 +97,9 @@ fi
 cd $HOME/.githooks
 ./generate-symlinks.sh
 
+# Install flake8 for linting (do it globally since we use docker for some projects)
+sudo pip install flake8
+
 # Set up git repositories -----------------------------------------------------
 echo ""
 echo "Setting up git repositories..."

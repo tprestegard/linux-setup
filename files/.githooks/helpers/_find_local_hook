@@ -12,7 +12,7 @@ if [[ "$?" -ne 0 ]] && [[ -z "${localhooks_path}" ]]; then
     localhooks_exist=0
     exit 1
 else
-    hook_path=$(realpath "${localhooks_path}/$1")
+    hook_path="${localhooks_path}/$1"
     if [[ -f ${hook_path} ]]; then
         echo "${hook_path}"
     fi

@@ -1,10 +1,67 @@
 #! /bin/bash
+#
+# Multiple hooks in this file
 
-_run () {
-    local RED='\e[1;31m'
-    local GREEN='\e[1;32m'
-    local NC='\e[0m'
-    
+################################################################################
+# Individual hooks #############################################################
+################################################################################
+# Check line lengths - first line: max 50 chars, other lines: max 72 chars
+line_length () {
+    local fail=false
+    line_no=1
+    while IFS= read -r line; do
+        # Get allowed line length
+        if [[ "${line_no}" -eq 1 ]]; then
+            allowed_length=50
+        else
+            allowed_length=72
+        fi
+
+        # Check line length
+        if [[ "${#line}" -gt "${allowed_length}" ]]; then
+            echo -e "${RED}[fail]${NC} line ${line_no} of commit message is longer than ${allowed_length} chars."
+            fail=true
+        fi
+
+        # Increment counter
+        line_no=$((line_no+1))
+    done < "$1"
+    if $fail; then
+        exit 1
+    fi
+}
+
+# If multi-line commit, check that the second line is blank
+blank_second_line () {
+    n_lines=$(wc -l "$1" | awk '{ print $1 }')
+    local fail=false
+    if [[ "${n_lines}" -gt 1 ]]; then
+        line2=$(cat "$1" | sed -n -e '2{p;q}')
+        if [[ -n "${line2}" ]]; then
+            echo -e "${RED}[fail]${NC} second line of multi-line commit message must be blank."
+            fail=true
+        fi
+    fi
+    if $fail; then
+        exit 1
+    fi
+}
+
+# Check that first line doesn't end in a period
+first_line_no_period () {
+    line1=$(head -1 "$1")
+    last_char=${line1: -1}
+    if [[ "${last_char}" == '.' ]]; then
+        echo -e "${RED}[fail]${NC} first line of commit message should not end in a period."
+        exit 1
+    fi
+}
+
+
+# Check for file permission changes
+# This seems like it should be a pre-commit hook, but we have to check the commit message
+# to see if it's allowed, so it has to be a commit-msg hook.
+file_perms () {
     # Get list of files whose mode have changed
     local fail=false
     for file in $(git diff --cached --summary | grep 'mode change ' | awk '{print $6}'); do
@@ -19,4 +76,20 @@ _run () {
     if $fail; then
         exit 1
     fi
+}
+
+################################################################################
+# Main _run func to run all hooks ##############################################
+################################################################################
+_run () {
+    local RED='\e[1;31m'
+    local GREEN='\e[1;32m'
+    local NC='\e[0m'
+
+    # Run hooks
+    first_line_no_period "$1"
+    blank_second_line "$1"
+    line_length "$1"
+    file_perms "$1"
+
 }

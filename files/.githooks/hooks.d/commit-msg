@@ -34,6 +34,7 @@ line_length () {
 # If multi-line commit, check that the second line is blank
 blank_second_line () {
     n_lines=$(wc -l "$1" | awk '{ print $1 }')
+    echo "lines: $n_lines"
     local fail=false
     if [[ "${n_lines}" -gt 1 ]]; then
         line2=$(cat "$1" | sed -n -e '2{p;q}')
@@ -65,8 +66,7 @@ file_perms () {
     # Get list of files whose mode have changed
     local fail=false
     for file in $(git diff --cached --summary | grep 'mode change ' | awk '{print $6}'); do
-        grep "\[${file}:permissions\]" $1 > /dev/null 2>&1
-        if [[ "$?" != 0 ]]; then
+        if ! grep -q "\[${file}:permissions\]" "$1"; then
             echo -e "${RED}[fail]${NC} permissions have changed on ${file}. Add [${file}:permissions] to the commit message to allow this change."
             fail=true
         else

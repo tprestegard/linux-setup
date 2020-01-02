@@ -7,4 +7,4 @@ set -e
 
 COMMIT_SHA="$1"
 shift
-git diff "${COMMIT_SHA}^" "${COMMIT_SHA}" $@
+git diff "${COMMIT_SHA}^" "${COMMIT_SHA}" "$@"

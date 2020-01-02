@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# git-irb: interactive rebase going back N commits
+#   usage: git irb <N> [OTHER-ARGS] == git rebase -i HEAD~<N> [OTHER-ARGS]
+
+set -e
+
+N_COMMITS="$1"
+shift
+git rebase -i HEAD~"${N_COMMITS}" "$@"

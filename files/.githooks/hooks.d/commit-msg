@@ -33,8 +33,7 @@ line_length () {
 
 # If multi-line commit, check that the second line is blank
 blank_second_line () {
-    n_lines=$(wc -l "$1" | awk '{ print $1 }')
-    echo "lines: $n_lines"
+    n_lines=$(grep -v "^#" "$1" | wc -l)
     local fail=false
     if [[ "${n_lines}" -gt 1 ]]; then
         line2=$(cat "$1" | sed -n -e '2{p;q}')

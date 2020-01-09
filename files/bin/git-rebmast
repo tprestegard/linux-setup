@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# git-rebmast: pull updates into default branch (master by default), and then
+#              rebase the current branch off of that branch
+# Usage:  git rebmast [base-branch]
+
+set -e
+
+BASE_BRANCH=${1-master}
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+git checkout ${BASE_BRANCH}
+git pull
+git checkout ${CURRENT_BRANCH}
+git rebase ${BASE_BRANCH}

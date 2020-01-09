@@ -15,10 +15,11 @@ Things to do before running this script:
   6. Install git-crypt (sudo apt-get install git-crypt)
   7. Clone this repository (circular logic) and run the setup script
      cd $HOME
-     git clone --config core.hooksPath=.githooks git@github.com:tprestegard/linux-setup.git
+     git clone --config core.localhookspath=.githooks core.hookmergestrategy=1 git@github.com:tprestegard/linux-setup.git
      cd linux-setup
      git-crypt unlock
      ./install
+  8. Set up Univa VPN and connected to it
 EOF
 echo "${STUFF}"
 
@@ -72,29 +73,40 @@ fi
 
 # Run apt-get update/upgrade/dist-upgrade
 echo "Updating and installing packages..."
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install vim git python-pip python3-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox curl awscli docker.io docker-compose jq
-sudo apt-get dist-upgrade
+sudo apt-get update > /dev/null
+sudo apt-get upgrade -y > /dev/null
+sudo apt-get install vim git python-pip python3-pip python-virtualenv texlive texlive-latex-extra gnupg2 build-essential linux-headers-$(uname -r) git-crypt virtualenvwrapper tmux texlive-publishers git-crypt tox curl awscli docker.io docker-compose jq -y > /dev/null
+sudo apt-get dist-upgrade -y > /dev/null
 
 # Add user to docker group
+echo "Adding user ${USERNAME} to docker group..."
 sudo usermod -aG docker ${USERNAME}
 
 # Run cleanup
 echo "Cleaning up..."
-sudo apt-get autoremove
+sudo apt-get autoremove > /dev/null
 
 
 # Set up git repositories -----------------------------------------------------
 echo ""
 echo "Setting up git repositories..."
 
-# Don't need to do this repo (linux-setup), obviously
-# notes
+###############################################################################
+# PERSONAL REPOS ##############################################################
+###############################################################################
+# TODO set up functions for doing all this stuff
+# TODO add other personal repos
+# notes repo
 cd $HOME
+if [[ ! -d "personal" ]]; then
+    echo -n "Creating $HOME/personal directory..."
+    mkdir personal
+    echo "DONE"
+fi
+cd personal
 echo -n "Setting up notes repository..."
 if [[ ! -d "notes" ]]; then
-    git clone --config core.hooksPath=.githooks git@github.com:tprestegard/notes.git > /dev/null
+    git clone git@github.com:tprestegard/notes.git > /dev/null
     cd notes
     git config --local user.email "tprestegard@gmail.com"
     git config --local user.signingkey E70E3FE26E9D0292
@@ -104,7 +116,15 @@ else
     echo "ALREADY SETUP"
 fi
 
-# LIGO repos
+###############################################################################
+# LIGO repos ##################################################################
+###############################################################################
+REPOS=(
+    cgca-computing-team/cgca-config
+    cgca-computing-team/gracedb-aws-deploy
+    tanner.prestegard/gracedb
+    tanner.prestegard/gracedb-client
+)
 cd $HOME
 if [[ ! -d "ligo" ]]; then
     echo -n "Creating $HOME/ligo directory..."
@@ -113,62 +133,32 @@ if [[ ! -d "ligo" ]]; then
 fi
 cd ligo
 
-# cgca-config repo
-echo -n "Setting up cgca-config repository..."
-if [[ ! -d "cgca-config" ]]; then
-    git clone git@git.ligo.org:cgca-computing-team/cgca-config.git > /dev/null
-    cd cgca-config
-    git config --local user.email "tanner.prestegard@ligo.org"
-    git config --local user.signingkey 01299B361C3ED495
-    echo "DONE"
-    cd ../
-else
-    echo "ALREADY SETUP"
-fi
-# GraceDB repos
-if [[ ! -d "gracedb" ]]; then
-    echo -n "Setting up $(HOME)/ligo/gracedb directory..."
-    mkdir gracedb
-    echo "DONE"
-fi
-cd gracedb
-echo -n "Setting up gracedb repository..."
-if [[ ! -d "gracedb" ]]; then
-    git clone git@git.ligo.org:tanner.prestegard/gracedb.git > /dev/null
-    cd gracedb
-    git config --local user.email "tanner.prestegard@ligo.org"
-    git config --local user.signingkey 01299B361C3ED495
-    git remote add upstream git@git.ligo.org:lscsoft/gracedb.git
-    echo "DONE"
-    cd ../
-else
-    echo "ALREADY SETUP"
-fi
-echo -n "Setting up gracedb-client repository..."
-if [[ ! -d "gracedb-client" ]]; then
-    git clone git@git.ligo.org:tanner.prestegard/gracedb-client.git > /dev/null
-    cd gracedb-client
-    git config --local user.email "tanner.prestegard@ligo.org"
-    git config --local user.signingkey 01299B361C3ED495
-    git remote add upstream git@git.ligo.org:lscsoft/gracedb-client.git
-    echo "DONE"
-    cd ../
-else
-    echo "ALREADY SETUP"
-fi
-echo -n "Setting up gracedb-aws-deploy repository..."
-if [[ ! -d "gracedb-aws-deploy" ]]; then
-    git clone git@git.ligo.org:cgca-computing-team/gracedb-aws-deploy.git > /dev/null
-    cd gracedb-aws-deploy
-    git config --local user.email "tanner.prestegard@ligo.org"
-    git config --local user.signingkey 01299B361C3ED495
-    echo "DONE"
-    cd ../
-else
-    echo "ALREADY SETUP"
-fi
+for REPO_PATH in "${REPOS[@]}"; do
+    REPO=$(basename ${REPO_PATH})
+    echo -n "Setting up ${REPO} repository..."
+    if [[ ! -d "${REPO}" ]]; then
+        git clone git@git.ligo.org:${REPO_PATH}.git > /dev/null
+        cd ${REPO}
+        git config --local user.email "tanner.prestegard@ligo.org"
+        git config --local user.signingkey 01299B361C3ED495
 
-# Univa github repos
+        # Add upstream for gracedb repos
+        if [[ ${REPO} =~ "gracedb" ]]; then
+            git remote add upstream git@git.ligo.org:lscsoft/${REPO}.git
+        fi
+
+        echo "DONE"
+        cd ../
+    else
+        echo "ALREADY SETUP"
+    fi
+done
+
+
+###############################################################################
+# Univa github repos ##########################################################
+###############################################################################
+REPOS=(tortuga tortuga-kit-awsadapter tortuga-kit-gceadapter tortuga-kit-azureadapter)
 cd $HOME
 if [[ ! -d "univa" ]]; then
     echo -n "Creating $HOME/univa directory..."
@@ -176,28 +166,53 @@ if [[ ! -d "univa" ]]; then
     echo "DONE"
 fi
 cd univa
-echo -n "Setting up tortuga repository..."
-if [[ ! -d "tortuga" ]]; then
-    git clone git@github.com:UnivaCorporation/tortuga.git > /dev/null
-    cd tortuga
-    git config --local user.email "tprestegard@univa.com"
-    git config --local user.signingkey 95289B36EA2F4460
-    echo "DONE"
-    cd ../
+for REPO in "${REPOS[@]}"; do
+    echo -n "Setting up ${REPO} repository..."
+    if [[ ! -d "${REPO}" ]]; then
+        git clone git@github.com:UnivaCorporation/${REPO}.git > /dev/null
+        cd ${REPO}
+        git config --local user.email "tprestegard@univa.com"
+        git config --local user.signingkey 95289B36EA2F4460
+        echo "DONE"
+        cd ../
+    else
+        echo "ALREADY SETUP"
+    fi
+done
+
+###############################################################################
+# Univa gitlab repos ##########################################################
+###############################################################################
+REPOS=(
+    navops/navops-launch/automation-sdk
+    navops/navops-launch/kit-uge
+    navops/navops-launch/launch-webui-v2
+    navops/navopsctl
+    navops/navops-launch/navops-launch
+    navops/navops-launch/packer/tortuga
+    navops/navops-launch/univa-kit-unisight
+    tprestegard/notes
+)
+# Check if VPN is set up
+if ! ifconfig tun0 > /dev/null 2>&1; then
+    echo "Univa VPN not connected! Skipping Univa github repos..."
 else
-    echo "ALREADY SETUP"
+    for REPO_PATH in "${REPOS[@]}"; do
+        REPO=$(basename ${REPO_PATH})
+        echo -n "Setting up ${REPO} repository..."
+        if [[ ! -d "${REPO}" ]]; then
+            git clone ssh://git@gitlab.tor.univa.com:2222/${REPO_PATH}.git > /dev/null
+            cd ${REPO}
+            git config --local user.email "tprestegard@univa.com"
+            git config --local user.signingkey 95289B36EA2F4460
+            echo "DONE"
+            cd ../
+        else
+            echo "ALREADY SETUP"
+        fi
+    done
 fi
-echo -n "Setting up tortuga-kit-awsadapter repository..."
-if [[ ! -d "tortuga-kit-awsadapter" ]]; then
-    git clone git@github.com:UnivaCorporation/tortuga-kit-awsadapter.git > /dev/null
-    cd tortuga-kit-awsadapter
-    git config --local user.email "tprestegard@univa.com"
-    git config --local user.signingkey 95289B36EA2F4460
-    echo "DONE"
-    cd ../
-else
-    echo "ALREADY SETUP"
-fi
+
 
 # Git configuration
 echo -n "Setting up global git configuration..."
@@ -205,6 +220,7 @@ git config --global core.editor vim
 git config --global user.name "Tanner Prestegard"
 git config --global gpg.program gpg2
 git config --global commit.gpgsign true
+git config --global core.hookspath ~/.githooks/hooks
 # Don't set up email or signingkey by default - force myself to set up email and signing key separately for each one
 #git config --global user.email "tprestegard@univa.com"
 #git config --global user.signingkey 95289B36EA2F4460
@@ -230,6 +246,7 @@ sudo apt-get install fish
 sudo pip install virtualfish
 
 # Install vim plugins
+# TODO: skip if already done
 ## NERDTree
 git clone https://github.com/scrooloose/nerdtree.git ~/.vim/pack/vendor/start/nerdtree
 vim -u NONE -c "helptags ~/.vim/pack/vendor/start/nerdtree/doc" -c q
@@ -249,10 +266,8 @@ You're all set!  Other things to do manually:
   - Change settings
     - Set Ctrl+Alt+T as a custom shortcut for starting new terminal
     - Turn display off after 15 minutes
-  - Set up Univa VPN
   - Set up Slack
   - Set up Zoom
   - Set up bookmarks
 EOF
-echo "${STUFF}"
-echo ""
+echo -e "${STUFF}\n"

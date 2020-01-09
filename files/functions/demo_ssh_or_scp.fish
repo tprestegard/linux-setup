@@ -11,5 +11,5 @@ function demo_ssh_or_scp
         return 1
     end
     set SSH_KEY "$HOME/univa/navops-launch/demo/$CLOUD_PROVIDER/.ssh/$KEY_NAME"
-    env SSH_AUTH_SOCK="" $cmd -i $SSH_KEY $argv[3..-1]
+    $cmd -o IdentitiesOnly=yes -i $SSH_KEY $argv[3..-1]
 end

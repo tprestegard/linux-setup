@@ -188,6 +188,7 @@ REPOS=(
     navops/navops-launch/kit-uge
     navops/navops-launch/launch-webui-v2
     navops/navopsctl
+    navops/navops-launch/navops-documentation
     navops/navops-launch/navops-launch
     navops/navops-launch/packer/tortuga
     navops/navops-launch/univa-kit-unisight

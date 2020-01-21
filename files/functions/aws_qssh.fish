@@ -5,15 +5,25 @@ function aws_qssh
     # Note that key-name is used for matching hosts in AWS, not necessarily for actual SSH
 
     # Argument parsing with defaults
-    test -n "$argv[1]"; and set HOST_TYPE "$argv[1]"; or set CLOUD_PROVIDER "installer"
+    test -n "$argv[1]"; and set HOST_TYPE "$argv[1]"; or set HOST_TYPE "installer"
     test -n "$_flag_r"; and set REGION "$_flag_r"; or set REGION "us-west-2"
     test -n "$_flag_k"; and set KEY_NAME "$_flag_k"; or set KEY_NAME "navops-launch-demo-"(whoami)
     test -n "$_flag_u"; and set USERNAME "$_flag_u"; or set USERNAME "centos"
 
-    # Cache file
+    # Help?
+    if set -q _flag_h
+        echo "$USAGE"
+        return
+    end
+
+    # Cachefile processing
     set CACHEFILE "$HOME/.config/aws_qssh_config"
     if set -q _flag_v
-        cat $CACHEFILE
+        if test -e "$CACHEFILE"
+            cat $CACHEFILE
+        else
+            echo "Cachefile $CACHEFILE does not exist."
+        end
         return
     else if set -q _flag_c
         rm -f $CACHEFILE
@@ -49,10 +59,14 @@ function aws_qssh
     set CACHE_HOSTNAME 0
     if test -z "$HOSTNAME"
        or test "$HOSTNAME" = "null"
+        #set HOSTNAME (aws --region=$REGION ec2 describe-instances \
+        #    --filter Name=key-name,Values=$KEY_NAME Name=instance-state-name,Values=running \
+        #    --query 'Reservations[*].Instances[*].{Instance:PublicDnsName,Name:Tags[?Key==`Name`]|[0].Value}' |\
+        #    jq -r --arg HOST_STR $HOST_STR '.[] | .[0] | select(.Name | contains($HOST_STR)).Instance')
         set HOSTNAME (aws --region=$REGION ec2 describe-instances \
-            --filter Name=key-name,Values=$KEY_NAME \
-            --query 'Reservations[*].Instances[*].{Instance:PublicDnsName,Name:Tags[?Key==`Name`]|[0].Value}' |\
-            jq -r --arg HOST_STR $HOST_STR '.[] | .[0] | select(.Name | contains($HOST_STR)).Instance')
+            --filter Name=key-name,Values=$KEY_NAME Name=instance-state-name,Values=running \
+            --query 'Reservations[*].Instances[*].{Value:PublicDnsName,Name:Tags[?Key==`Name`]|[0].Value}' |\
+            jq -r --arg HOST_STR $HOST_STR '[add | .[] | select(.Name | contains($HOST_STR)) | select(.Value != "").Value][0]')
         if test -z $HOSTNAME
             echo "Host not found."
             return 1

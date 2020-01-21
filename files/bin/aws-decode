@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+aws sts decode-authorization-message --encoded-message "$1" | \
+    jq '.DecodedMessage' | \
+    python -c "import sys, json; print(json.loads(sys.stdin.read()))" | \
+    jq

@@ -1,6 +1,26 @@
 #! /usr/bin/env bash
+#
+# Decodes and pretty-prints an encoded AWS error message
 
-aws sts decode-authorization-message --encoded-message "$1" | \
-    jq '.DecodedMessage' | \
-    python -c "import sys, json; print(json.loads(sys.stdin.read()))" | \
-    jq
+# Setup
+set -e
+USAGE="${0} <encoded-aws-error-message>"
+
+# Check args
+if [[ "$#" -ne 1 ]]; then
+    echo "Usage: ${USAGE}"
+    exit 1
+fi
+
+# Make sure jq is installed
+if [[ -z "$(command -v jq)" ]]; then
+    echo "This script requires jq, but it does not appear to be installed."
+    exit 1
+fi
+
+# Decode message
+DECODED_MESSAGE=$(aws sts decode-authorization-message --encoded-message "$1")
+
+# Pretty-print the message
+echo "${DECODED_MESSAGE}" | jq '.DecodedMessage' | \
+    python -c "import sys, json; print(json.loads(sys.stdin.read()))" | jq

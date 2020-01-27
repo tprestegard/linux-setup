@@ -19,7 +19,8 @@ line_length () {
 
         # Check line length
         if [[ "${#line}" -gt "${allowed_length}" ]]; then
-            echo -e "${RED}[fail]${NC} line ${line_no} of commit message is longer than ${allowed_length} chars."
+            echo -e "${RED}[fail]${NC} line ${line_no} of commit message" \
+                "is ${#line} chars; must be ${allowed_length} chars or less."
             fail=true
         fi
 
@@ -38,7 +39,8 @@ blank_second_line () {
     if [[ "${n_lines}" -gt 1 ]]; then
         line2=$(cat "$1" | sed -n -e '2{p;q}')
         if [[ -n "${line2}" ]]; then
-            echo -e "${RED}[fail]${NC} second line of multi-line commit message must be blank."
+            echo -e "${RED}[fail]${NC} second line of multi-line commit" \
+                "message must be blank."
             fail=true
         fi
     fi
@@ -52,7 +54,8 @@ first_line_no_period () {
     line1=$(head -1 "$1")
     last_char=${line1: -1}
     if [[ "${last_char}" == '.' ]]; then
-        echo -e "${RED}[fail]${NC} first line of commit message should not end in a period."
+        echo -e "${RED}[fail]${NC} first line of commit message should not " \
+            "end in a period."
         exit 1
     fi
 }
@@ -66,7 +69,8 @@ file_perms () {
     local fail=false
     for file in $(git diff --cached --summary | grep 'mode change ' | awk '{print $6}'); do
         if ! grep -q "\[${file}:permissions\]" "$1"; then
-            echo -e "${RED}[fail]${NC} permissions have changed on ${file}. Add [${file}:permissions] to the commit message to allow this change."
+            echo -e "${RED}[fail]${NC} permissions have changed on ${file}." \
+                "Add [${file}:permissions] to the commit message to allow this change."
             fail=true
         else
             echo -e "${GREEN}[ok]${NC} permissions change on ${file} allowed."

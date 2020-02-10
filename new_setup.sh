@@ -185,6 +185,8 @@ done
 ###############################################################################
 REPOS=(
     navops/navops-launch/automation-sdk
+    navops/navops-launch/controller
+    navops/navops-launch/kit-navops-launch
     navops/navops-launch/kit-uge
     navops/navops-launch/launch-webui-v2
     navops/navopsctl
@@ -192,6 +194,7 @@ REPOS=(
     navops/navops-launch/navops-launch
     navops/navops-launch/packer/tortuga
     navops/navops-launch/univa-kit-unisight
+    navops/navops-launch/unisight-graphql
     tprestegard/notes
 )
 # Check if VPN is set up
@@ -254,6 +257,10 @@ vim -u NONE -c "helptags ~/.vim/pack/vendor/start/nerdtree/doc" -c q
 
 ## lightline
 git clone https://github.com/itchyny/lightline.vim ~/.vim/pack/plugins/start/lightline
+
+## vim-go
+git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go
+
 
 # Things to do manually at the end
 echo ""

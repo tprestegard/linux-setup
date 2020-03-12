@@ -1,0 +1,30 @@
+#! /bin/bash
+
+#set -x
+vpn_off() {
+  sudo sed -i "s/^nameserver 172.20.0.1/#nameserver 172.20.0.1/;s/^search tor.univa.com/#search tor.univa.com/" /etc/resolvconf/resolv.conf.d/head
+  sudo pkill -f openvpn
+  sudo resolvconf -u
+}
+vpn_on()
+{
+  if ! grep '172.20.0.1' /etc/resolvconf/resolv.conf.d/head ; then
+    sudo su - -c "echo 'nameserver 172.20.0.1' >> /etc/resolvconf/resolv.conf.d/head"
+    sudo su - -c "echo 'search tor.univa.com' >> /etc/resolvconf/resolv.conf.d/head"
+  fi
+  sudo sed -i "s/^#nameserver 172.20.0.1/nameserver 172.20.0.1/;s/^#search tor.univa.com/search tor.univa.com/" /etc/resolvconf/resolv.conf.d/head
+  sudo resolvconf -u
+  sudo openvpn --config /etc/openvpn/client/client.ovpn
+}
+on_exit()
+{
+  vpn_off
+}
+if [ "$1" == "on" ]; then
+  trap on_exit EXIT INT TERM
+  vpn_on
+elif [ "$1" == "off" ]; then
+  vpn_off
+else
+  echo "Usage: $0 on|off"
+fi

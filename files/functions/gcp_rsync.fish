@@ -6,5 +6,5 @@ function gcp_rsync
     test -n "$argv[4]"; and set USERNAME "$argv[4]"; or set USERNAME "root"
     set SSH_KEY "$HOME/.ssh/id_rsa_univa"
 
-    rsync -av --delete -e "ssh -i $SSH_KEY" $DIR "$USERNAME@$IP:$TARGET_DIR"
+    rsync -av --delete -e "ssh -i $SSH_KEY" $SRC_DIR "$USERNAME@$IP:$TARGET_DIR"
 end

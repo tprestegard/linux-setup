@@ -9,7 +9,7 @@ set -e
 COMMIT_MSG_BASE=${1-"Temporary commit"}
 
 # Get number from previous commit
-PREVIOUS_N=$(git log -1 --pretty=%B | sed -r "s/^${COMMIT_MSG_BASE} #([0-9]+)\s*$/\1/")
+PREVIOUS_N=$(git log -1 --pretty=%B | sed -r "s/^${COMMIT_MSG_BASE} ([0-9]+)\s*$/\1/")
 
 # Check if PREVIOUS_N is a number; if not, the previous commit probably wasn't a temporary commit
 if ! [[ ${PREVIOUS_N} =~ ^[0-9]+$ ]]; then
@@ -19,5 +19,5 @@ else
 fi
 
 # Generate new commit message and commit
-NEW_COMMIT_MSG="${COMMIT_MSG_BASE} #${NEW_N}"
+NEW_COMMIT_MSG="${COMMIT_MSG_BASE} ${NEW_N}"
 git commit -m "${NEW_COMMIT_MSG}"

@@ -65,4 +65,8 @@ for file in ${file_list}; do
 
 done
 
+# Run generate_symlinks.sh in .githooks
+cd $HOME/.githooks
+./generate-symlinks.sh
+
 

@@ -1,7 +1,4 @@
-# Set up virtualfish
-eval (python3 -m virtualfish auto_activation)
-
-# Add $HOME/.local/bin
+# Add $HOME/.local/bin to path
 set PATH $HOME/.local/bin $PATH
 
 # Set up arrow keys for history completion

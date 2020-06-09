@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# git-ccbr: Creates a remote branch that the current local branch will track
+# Usage: git ccbr [remote]
+#   Defaults to "origin" if [remote] is not specified
+
+set -e
+
+REMOTE=${1-"origin"}
+
+
+# Check if remote branch exists
+REMOTE_BRANCH=$(git checkout)
+
+if [[ -z "${REMOTE_BRANCH}" ]]; then
+    BRANCH_NAME=$(git branch --show-current)
+    git push -u "${REMOTE}" "${BRANCH_NAME}"
+    exit 0
+else
+    echo "Remote branch already exists."
+    exit 1
+fi

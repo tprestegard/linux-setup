@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# git-diff-remote: Do a diff compared to the remote version of the current branch
+# Usage: git diff-remote
+
+set -e
+
+# Get name of current branch
+BRANCH_NAME=$(git branch --show-current)
+
+# Check if remote branch exists
+REMOTE_BRANCH=$(git checkout)
+
+if [[ -z "${REMOTE_BRANCH}" ]]; then
+    echo "Current branch '${BRANCH_NAME}' has no remote."
+    exit 1
+else
+    git diff $(git remote)/"${BRANCH_NAME}"
+    exit 0
+fi

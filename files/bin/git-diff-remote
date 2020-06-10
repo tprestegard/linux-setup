@@ -15,6 +15,6 @@ if [[ -z "${REMOTE_BRANCH}" ]]; then
     echo "Current branch '${BRANCH_NAME}' has no remote."
     exit 1
 else
-    git diff $(git remote)/"${BRANCH_NAME}"
+    git diff $(git remote)/"${BRANCH_NAME}" "$@"
     exit 0
 fi

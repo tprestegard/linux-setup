@@ -1,3 +1,7 @@
+" Inherit defaults
+"source $VIMRUNTIME/defaults.vim
+filetype plugin indent on
+
 " color scheme
 colorscheme distinguished
 "colorscheme badwolf

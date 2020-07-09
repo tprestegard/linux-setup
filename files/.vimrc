@@ -1,6 +1,7 @@
 " Inherit defaults
 "source $VIMRUNTIME/defaults.vim
-filetype plugin indent on
+"filetype plugin indent on
+filetype plugin on
 
 " color scheme
 colorscheme distinguished

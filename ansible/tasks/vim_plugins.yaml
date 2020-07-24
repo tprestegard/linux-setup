@@ -1,0 +1,17 @@
+---
+# Clone git repos for vim plugins
+- name: Get vim plugins
+  git:
+    repo: "https://github.com/{{ item.name }}.git"
+    dest: "{{ ansible_user_dir }}/.vim/{{ item.dest }}"
+    update: no
+  loop:
+    - { name: scrooloose/nerdtree, dest: pack/vendor/start/nerdtree }
+    - { name: itchyny/lightline.vim, dest: pack/plugins/start/lightline }
+    - { name: fatih/vim-go, dest: pack/plugins/start/vim-go }
+
+# Configure NERDTree plugin
+- name: Configure vim NERDTree plugin
+  shell: "vim -u NONE -c \"helptags {{ ansible_user_dir }}/.vim/pack/vendor/start/nerdtree/doc\" -c q"
+  args:
+    creates: "{{ ansible_user_dir }}/.vim/pack/vendor/start/nerdtree/doc/tags"

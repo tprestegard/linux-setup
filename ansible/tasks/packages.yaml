@@ -1,0 +1,113 @@
+---
+- name: Install basic utility packages
+  apt:
+    name:
+      - apt-transport-https
+      - bc
+      - build-essential
+      - ca-certificates
+      - cmake
+      - cups
+      - curl
+      - fish
+      - g++
+      - git
+      - git-crypt
+      - golang
+      - google-chrome-stable
+      - gnupg2
+      - jq
+      - make
+      - net-tools
+      - nodejs
+      - npm
+      - openssh-server
+      - openvpn
+      - pandoc
+      - pdftk
+      - resolvconf
+      - snapd
+      - thunderbird
+      - tmux
+      - vim
+      - wget
+    state: present
+    autoclean: true
+
+- name: Install Python-related packages
+  apt:
+    name:
+      - ipython3
+      - python3-pip
+      - python3-venv
+    state: present
+    autoclean: true
+
+- name: Install LaTeX-related packages
+  apt:
+    name:
+      - texlive
+      - texlive-latex-extra
+      - texlive-publishers
+    state: present
+    autoclean: true
+
+- name: Install cloud-related packages
+  apt:
+    name:
+      - google-cloud-sdk
+      - kubectl
+    state: present
+    autoclean: true
+
+- name: Install container-related packages
+  apt:
+    name:
+      - docker.io
+      - docker-compose
+    state: present
+    autoclean: true
+
+- name: Install Univa-related packages
+  apt:
+    name:
+      - maven
+    state: present
+    autoclean: true
+
+- name: Install other packages
+  apt:
+    name:
+      - asciinema
+      - gimp
+      - gnome-tweak-tool
+      - grip
+      - kazam
+      - kdenlive
+      - lutris
+      - rhythmbox
+    state: present
+    autoclean: true
+
+- name: Install zoom from a .deb
+  apt:
+    deb: https://zoom.us/client/latest/zoom_amd64.deb
+
+- name: Install slack via snap
+  snap:
+    name: slack
+    classic: yes
+
+- name: Install spotify via snap
+  snap:
+    name: spotify
+
+- name: Install PyCharm via snap
+  snap:
+    name: pycharm-community
+    classic: yes
+
+- name: Install GoLand via snap
+  snap:
+    name: goland
+    classic: yes

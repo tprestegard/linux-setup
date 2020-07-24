@@ -1,0 +1,5 @@
+---
+- name: Directory for Univa projects
+  file:
+    path: "/home/{{ ansible_user_id }}/univa"
+    state: directory

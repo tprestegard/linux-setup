@@ -1,0 +1,23 @@
+---
+- name: Add kubernetes repo
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+    filename: kubernetes
+    state: present
+
+- name: Add Google Cloud SDK repo
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main
+    filename: google-cloud-sdk
+    state: present
+
+- name: Add Google Chrome repo
+  apt_repository:
+    repo: deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+    filename: google-chrome
+    state: present
+
+- name: Add Lutris repo
+  apt_repository:
+    repo: ppa:lutris-team/lutris
+    state: present

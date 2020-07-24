@@ -1,0 +1,33 @@
+---
+# Create any necessary directories for links
+- name: Create directories
+  file:
+    path: "{{ ansible_user_dir }}/{{ item }}"
+    state: directory
+  loop:
+    - .config
+    - .config/fish
+    - .kaggle
+    - .ssh
+
+# Link files
+- name: Link files
+  file:
+    src: "{{ ansible_user_dir }}/personal/linux-setup/files/{{ item.src }}"
+    dest: "{{ ansible_user_dir }}/{{ item.dest }}"
+    state: link
+    force: yes
+  loop:
+    - { src: bin, dest: bin }
+    - { src: config, dest: .ssh/config }
+    - { src: config.fish, dest: .config/fish/config.fish }
+    - { src: .eyaml, dest: .eyaml }
+    - { src: functions, dest: .config/fish/functions }
+    - { src: .githooks, dest: .githooks }
+    - { src: helpme_commands, dest: .config/helpme }
+    - { src: kaggle.json, dest: .kaggle/kaggle.json }
+    - { src: .netrc, dest: .netrc }
+    - { src: .pypirc, dest: .pypirc }
+    - { src: .tmux.conf, dest: .tmux.conf }
+    - { src: .vim, dest: .vim }
+    - { src: .vimrc, dest: .vimrc }

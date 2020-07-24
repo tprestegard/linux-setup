@@ -1,0 +1,99 @@
+---
+# Create directory
+- name: Directory for personal projects
+  file:
+    path: "/home/{{ansible_user_id }}/personal"
+    state: directory
+
+# Check if we have github host key in known_hosts
+- name: Check if we have github host key
+  shell: "cat {{ ansible_user_dir }}/.ssh/known_hosts | grep \"github.com\""
+  register: github_host_key
+  failed_when: False
+  changed_when: "github_host_key.rc == 1"
+
+# Add key for github to known_hosts
+- name: Add github.com to known_hosts file
+  shell: "ssh-keyscan -t rsa github.com >> {{ ansible_user_dir }}/.ssh/known_hosts"
+  when: github_host_key.rc == 1
+
+# Check out personal repos
+- name: Check out personal repos
+  git:
+    repo: "git@github.com:tprestegard/{{ item }}.git"
+    dest: "{{ ansible_user_dir }}/personal/{{ item }}"
+    update: no
+    key_file: "{{ ansible_user_dir }}/.ssh/id_rsa_github"
+  loop:
+    - linux-setup
+    - ansible-workstation
+    - audio
+    - data_science
+    - gitstatus
+    - mp3-edit
+    - mtg_limited_tier_list
+    - notes
+
+# Set up git config user.email
+- name: Set up personal repos gitconfig user.email
+  git_config:
+    name: user.email
+    value: "tprestegard@gmail.com"
+    repo: "{{ ansible_user_dir }}/personal/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - linux-setup
+    - ansible-workstation
+    - audio
+    - data_science
+    - gitstatus
+    - mp3-edit
+    - mtg_limited_tier_list
+    - notes
+
+- name: Set up personal repos gitconfig user.signingkey
+  git_config:
+    name: user.signingkey
+    value: E70E3FE26E9D0292
+    repo: "{{ ansible_user_dir }}/personal/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - linux-setup
+    - ansible-workstation
+    - audio
+    - data_science
+    - gitstatus
+    - mp3-edit
+    - mtg_limited_tier_list
+    - notes
+
+# Unlock repos encrypted with git-crypt
+- name: Check if linux-setup repo is decrypted
+  command: ls .git/git-crypt
+  register: linux_setup_repo_unlocked
+  failed_when: False
+  changed_when: "linux_setup_repo_unlocked.rc == 2"
+  args:
+    chdir: "{{ ansible_user_dir }}/personal/linux-setup"
+
+- name: Unlock encrypted linux-setup repo
+  command: git-crypt unlock
+  when: linux_setup_repo_unlocked.stdout == ""
+  args:
+    chdir: "{{ ansible_user_dir }}/personal/linux-setup"
+
+- name: Check if notes repo is decrypted
+  command: ls .git/git-crypt
+  register: notes_repo_unlocked
+  failed_when: False
+  changed_when: "notes_repo_unlocked.rc == 2"
+  args:
+    chdir: "{{ ansible_user_dir }}/personal/notes"
+
+- name: Unlock encrypted notes repo
+  command: git-crypt unlock
+  when: notes_repo_unlocked.stdout == ""
+  args:
+    chdir: "{{ ansible_user_dir }}/personal/notes"

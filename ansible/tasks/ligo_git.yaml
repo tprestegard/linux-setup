@@ -1,0 +1,87 @@
+---
+# Create directory
+- name: Directory for LIGO projects
+  file:
+    path: "{{ ansible_user_dir }}/ligo"
+    state: directory
+
+# Check if we have git.ligo.org host key in known_hosts
+- name: Check if we have git.ligo.org host key
+  shell: "cat {{ ansible_user_dir }}/.ssh/known_hosts | grep \"git.ligo.org\""
+  register: ligo_gitlab_host_key
+  failed_when: False
+  changed_when: "ligo_gitlab_host_key.rc == 1"
+
+# Add key for git.ligo.org to known_hosts
+- name: Add git.lig.org to known_hosts file
+  shell: "ssh-keyscan -t rsa git.ligo.org >> {{ ansible_user_dir }}/.ssh/known_hosts"
+  when: ligo_gitlab_host_key.rc == 1
+
+# Check out LIGO repos
+- name: Check out LIGO repos
+  git:
+    repo: "git@git.ligo.org:{{ item.project }}/{{ item.name }}.git"
+    dest: "{{ ansible_user_dir }}/ligo/{{ item.name }}"
+    update: no
+  loop:
+    - { project: cgca-computing-team, name: cgca-config }
+    - { project: cgca-computing-team, name: gracedb-aws-deploy }
+    - { project: tanner.prestegard, name: gracedb }
+    - { project: tanner.prestegard, name: gracedb-client }
+
+
+# Set up gitconfig for LIGO repos
+- name: Set up gitconfig user.email for LIGO repos
+  git_config:
+    name: user.email
+    value: "tanner.prestegard@ligo.org"
+    repo: "{{ ansible_user_dir }}/ligo/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - cgca-config
+    - gracedb-aws-deploy
+    - gracedb
+    - gracedb-client
+
+- name: Set up gitconfig user.signingkey for LIGO repos
+  git_config:
+    name: user.signingkey
+    value: 01299B361C3ED495
+    repo: "{{ ansible_user_dir }}/ligo/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - cgca-config
+    - gracedb-aws-deploy
+    - gracedb
+    - gracedb-client
+
+# Set upstream for gracedb repos
+- name: Check if gracedb repo has upstream
+  shell: git remote | grep upstream
+  register: gracedb_repo_upstream
+  failed_when: "gracedb_repo_upstream.rc == 2"
+  changed_when: "gracedb_repo_upstream.rc != 0"
+  args:
+    chdir: "{{ ansible_user_dir }}/ligo/gracedb"
+
+- name: Add gracedb repo upstream
+  command: git remote add upstream git@git.ligo.org:lscsoft/gracedb.git
+  when: gracedb_repo_upstream.stdout == ""
+  args:
+    chdir: "{{ ansible_user_dir }}/ligo/gracedb"
+
+- name: Check if gracedb-client repo has upstream
+  shell: git remote | grep upstream
+  register: gracedb_client_repo_upstream
+  failed_when: "gracedb_client_repo_upstream.rc == 2"
+  changed_when: "gracedb_client_repo_upstream.rc != 0"
+  args:
+    chdir: "{{ ansible_user_dir }}/ligo/gracedb-client"
+
+- name: Add gracedb-client repo upstream
+  command: git remote add upstream git@git.ligo.org:lscsoft/gracedb-client.git
+  when: gracedb_client_repo_upstream.stdout == ""
+  args:
+    chdir: "{{ ansible_user_dir }}/ligo/gracedb-client"

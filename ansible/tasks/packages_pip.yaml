@@ -1,0 +1,6 @@
+---
+# Install certain packages with pip3
+- name: Install Python packages with pip3
+  pip:
+    name: awscli, azure-cli, click, flake8, ipdb, tox, tox-venv, virtualfish
+    state: present

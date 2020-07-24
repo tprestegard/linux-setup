@@ -1,0 +1,42 @@
+---
+# Check out Univa github repos
+- name: Check out Univa github repos
+  git:
+    repo: "git@github.com:UnivaCorporation/{{ item }}.git"
+    dest: "{{ ansible_user_dir }}/univa/{{ item }}"
+    update: no
+  loop:
+    - tortuga
+    - tortuga-kit-awsadapter
+    - tortuga-kit-azureadapter
+    - tortuga-kit-gceadapter
+    - tortuga-kit-slurm
+
+# Set up gitconfig for Univa github repos
+- name: Set up gitconfig user.email for Univa github repos
+  git_config:
+    name: user.email
+    value: "tprestegard@univa.com"
+    repo: "{{ ansible_user_dir }}/univa/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - tortuga
+    - tortuga-kit-awsadapter
+    - tortuga-kit-azureadapter
+    - tortuga-kit-gceadapter
+    - tortuga-kit-slurm
+
+- name: Set up gitconfig user.signingkey for Univa github repos
+  git_config:
+    name: user.signingkey
+    value: 95289B36EA2F4460
+    repo: "{{ ansible_user_dir }}/univa/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - tortuga
+    - tortuga-kit-awsadapter
+    - tortuga-kit-azureadapter
+    - tortuga-kit-gceadapter
+    - tortuga-kit-slurm

@@ -1,0 +1,6 @@
+---
+- name: Install mtgaup
+  npm:
+    name: mtgaup
+    global: yes
+    state: present

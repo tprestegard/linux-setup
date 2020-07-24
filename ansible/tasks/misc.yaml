@@ -1,0 +1,58 @@
+---
+# Check if helpme package needs to be installed
+- name: Check if helpme package is installed
+  command: "ls {{ ansible_user_dir }}/.local/bin/helpme"
+  register: helpme_exists
+  failed_when: False
+  changed_when: "helpme_exists.rc == 2"
+
+# Install helpme package
+- name: Install helpme package in editable mode
+  pip:
+    name: helpme
+    chdir: "{{ ansible_user_dir }}/personal"
+    editable: yes
+    state: present
+  when: helpme_exists.stdout == ""
+
+# Check if gitstatus package needs to be installed
+- name: Check if gitstatus package is installed
+  command: "ls {{ ansible_user_dir }}/.local/bin/gitstatus"
+  register: gitstatus_exists
+  failed_when: False
+  changed_when: "gitstatus_exists.rc == 2"
+
+# Install gitstatus package
+- name: Install gitstatus package in editable mode
+  pip:
+    name: gitstatus
+    chdir: "{{ ansible_user_dir }}/personal"
+    editable: yes
+    state: present
+  when: gitstatus_exists.stdout == ""
+
+# Check if githooks have been generated
+- name: Check if githooks have been generated
+  command: "ls {{ ansible_user_dir }}/.githooks/hooks"
+  register: githooks_exist
+  failed_when: False
+  changed_when: "githooks_exist.rc != 0"
+
+# Generate githooks files
+- name: Generate githooks
+  command: ./generate-symlinks.sh
+  when: githooks_exist.rc != 0
+  args:
+    chdir: "{{ ansible_user_dir }}/.githooks"
+
+# Check if virtualfish loader is installed in fish
+- name: Check if virtualfish loader is installed
+  command: "ls {{ ansible_user_dir }}/.config/fish/conf.d/virtualfish-loader.fish"
+  register: virtualfish_loader_installed
+  failed_when: False
+  changed_when: "virtualfish_loader_installed.rc != 0"
+
+# Install virtualfish loader
+- name: Install virtualfish loader
+  command: vf install compat_aliases projects environment auto_activation update_python
+  when: virtualfish_loader_installed.rc != 0

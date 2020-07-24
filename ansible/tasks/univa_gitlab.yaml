@@ -1,0 +1,118 @@
+---
+# Check if we have Univa gitlab host key in known_hosts
+- name: Check if we have Univa gitlab host key
+  shell: "cat {{ ansible_user_dir }}/.ssh/known_hosts | grep \"gitlab.tor.univa.com\""
+  register: univa_gitlab_host_key
+  failed_when: False
+  changed_when: "univa_gitlab_host_key.rc == 1"
+
+# Add key for Univa gitlab to known_hosts
+- name: Add Univa gitlab to known_hosts file
+  shell: "ssh-keyscan -t rsa -p 2222 gitlab.tor.univa.com >> {{ ansible_user_dir }}/.ssh/known_hosts"
+  when: univa_gitlab_host_key.rc == 1
+
+# Check if we have old Univa git host key in known_hosts (for Unisight repo)
+- name: Check if we have old Univa git host key
+  shell: "cat {{ ansible_user_dir }}/.ssh/known_hosts | grep \"git.tor.univa.com\""
+  register: univa_old_git_host_key
+  failed_when: False
+  changed_when: "univa_old_git_host_key.rc == 1"
+
+# Add key for old Univa git to known_hosts (for Unisight repo)
+- name: Add old Univa git to known_hosts file
+  shell: "ssh-keyscan -t rsa git.tor.univa.com >> {{ ansible_user_dir }}/.ssh/known_hosts"
+  when: univa_old_git_host_key.rc == 1
+
+# Check out Univa gitlab repos
+- name: Check out Univa gitlab repos
+  git:
+    repo: "ssh://git@gitlab.tor.univa.com:2222/{{ item.project }}/{{ item.name }}.git"
+    dest: "{{ ansible_user_dir }}/univa/{{ item.name }}"
+    update: no
+    key_file: "{{ ansible_user_dir }}/.ssh/id_rsa_univa"
+  loop:
+    - { project: navops, name: api-framework }
+    - { project: navops, name: navopsctl }
+    - { project: navops, name: unisight-docker }
+    - { project: navops/navops-launch, name: automation-sdk }
+    - { project: navops/navops-launch, name: controller }
+    - { project: navops/navops-launch, name: integration-tests }
+    - { project: navops/navops-launch, name: kit-navops-launch }
+    - { project: navops/navops-launch, name: kit-uge }
+    - { project: navops/navops-launch, name: launch-webui-v2 }
+    - { project: navops/navops-launch, name: navops-documentation }
+    - { project: navops/navops-launch, name: navops-launch }
+    - { project: navops/navops-launch, name: univa-kit-unisight }
+    - { project: navops/navops-launch, name: unisight-graphql }
+    - { project: tprestegard, name: graphql-automation-development }
+    - { project: tprestegard, name: navops-launch-aws-permissions }
+    - { project: tprestegard, name: notes }
+
+# Separate task for this repo since we change its name for clarity
+- name: Check out Univa packer/tortuga repo
+  git:
+    repo: ssh://git@gitlab.tor.univa.com:2222/navops/navops-launch/packer/tortuga.git
+    dest: "{{ ansible_user_dir }}/univa/packer-tortuga"
+    update: no
+
+# Check out Unisight repo
+- name: Check out Univa Unisight repo
+  git:
+    repo: git@git.tor.univa.com:unisight
+    dest: "{{ ansible_user_dir }}/univa/unisight"
+    update: no
+
+# Set up gitconfig for Univa gitlab repos
+- name: Set up gitconfig user.email for Univa gitlab repos
+  git_config:
+    name: user.email
+    value: "tprestegard@univa.com"
+    repo: "{{ ansible_user_dir }}/univa/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - api-framework
+    - automation-sdk
+    - controller
+    - integration-tests
+    - kit-navops-launch
+    - kit-uge
+    - launch-webui-v2
+    - navopsctl
+    - navops-documentation
+    - navops-launch
+    - packer-tortuga
+    - univa-kit-unisight
+    - unisight
+    - unisight-docker
+    - unisight-graphql
+    - graphql-automation-development
+    - navops-launch-aws-permissions
+    - notes
+
+- name: Set up gitconfig user.signingkey for Univa gitlab repos
+  git_config:
+    name: user.signingkey
+    value: 95289B36EA2F4460
+    repo: "{{ ansible_user_dir }}/univa/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - api-framework
+    - automation-sdk
+    - controller
+    - integration-tests
+    - kit-navops-launch
+    - kit-uge
+    - launch-webui-v2
+    - navopsctl
+    - navops-documentation
+    - navops-launch
+    - packer-tortuga
+    - univa-kit-unisight
+    - unisight
+    - unisight-docker
+    - unisight-graphql
+    - graphql-automation-development
+    - navops-launch-aws-permissions
+    - notes

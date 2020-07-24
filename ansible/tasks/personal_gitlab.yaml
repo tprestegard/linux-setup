@@ -1,0 +1,46 @@
+---
+# Check if we have gitlab host key in known_hosts
+- name: Check if we have gitlab host key
+  shell: "cat {{ ansible_user_dir }}/.ssh/known_hosts | grep \"gitlab.com\""
+  register: gitlab_host_key
+  failed_when: False
+  changed_when: "gitlab_host_key.rc == 1"
+
+# Add key for github to known_hosts
+- name: Add gitlab.com to known_hosts file
+  shell: "ssh-keyscan -t rsa gitlab.com >> {{ ansible_user_dir }}/.ssh/known_hosts"
+  when: gitlab_host_key.rc == 1
+
+# Check out personal repos from gitlab
+- name: Check out personal repos from gitlab.com
+  git:
+    repo: "git@gitlab.com:tprestegard/{{ item }}.git"
+    dest: "{{ ansible_user_dir }}/personal/{{ item }}"
+    update: no
+    key_file: "{{ ansible_user_dir }}/.ssh/id_ed25519_gitlab"
+  loop:
+    - helpme
+    - helpme-go
+
+# Set up git config user.email
+- name: Set up gitlab personal repos gitconfig user.email
+  git_config:
+    name: user.email
+    value: "tprestegard@gmail.com"
+    repo: "{{ ansible_user_dir }}/personal/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - helpme
+    - helpme-go
+
+- name: Set up gitlab personal repos gitconfig user.signingkey
+  git_config:
+    name: user.signingkey
+    value: E70E3FE26E9D0292
+    repo: "{{ ansible_user_dir }}/personal/{{ item }}"
+    scope: local
+    state: present
+  loop:
+    - helpme
+    - helpme-go

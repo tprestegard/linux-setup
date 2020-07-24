@@ -1,0 +1,13 @@
+---
+- name: Set up global gitconfig
+  git_config:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    scope: global
+    state: present
+  loop:
+    - { name: core.editor, value: vim }
+    - { name: user.name, value: "Tanner Prestegard" }
+    - { name: gpg.program, value: gpg2 }
+    - { name: commit.gpgsign, value: "true" }
+    - { name: core.hookspath, value: "{{ ansible_user_dir }}/.githooks/hooks" }

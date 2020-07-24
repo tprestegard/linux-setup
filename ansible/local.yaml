@@ -1,0 +1,34 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+    - include: tasks/apt_signing_keys.yaml
+    - include: tasks/apt_repositories.yaml
+    - name: Update repositories
+      apt: update_cache=yes
+      changed_when: False
+  tasks:
+    - include: tasks/packages.yaml
+    - include: tasks/packages_pip.yaml
+    - include: tasks/packages_npm.yaml
+    - include: tasks/users.yaml
+
+- hosts: all
+  become: false
+  tasks:
+    - include: tasks/global_gitconfig.yaml
+    - include: tasks/personal_github.yaml
+    - include: tasks/personal_gitlab.yaml
+    - include: tasks/ligo_git.yaml
+    - include: tasks/univa_repo_dir.yaml
+    - include: tasks/univa_github.yaml
+    - name: Check Univa VPN connection
+      command: ifconfig tun0
+      register: univa_vpn_connected
+      failed_when: False
+      changed_when: False
+    - include: tasks/univa_gitlab.yaml
+      when: univa_vpn_connected.rc == 0
+    - include: tasks/link_files.yaml
+    - include: tasks/vim_plugins.yaml
+    - include: tasks/misc.yaml
